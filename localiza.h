@@ -5,36 +5,63 @@
 #ifndef LOCALIZA_LOCALIZA_H
 #define LOCALIZA_LOCALIZA_H
 
+#define FLAGS_COUNT 5
+
+#define FLAG_HELP 0
+#define FLAG_CASE 1
+#define FLAG_COUNT 2
+#define FLAG_NUMB 3
+#define FLAG_OUT 4
+
+typedef char *String;
+
+typedef struct Option {
+    int status;
+
+    int (*verify)(String str);
+} Option;
+
 typedef struct Flags {
-    int active;
-    int help;
-    int sensitive;
     int count;
-    int line;
-    int out;
+    int active;
+    Option *flags;
 } Flags;
 
+typedef struct Targets {
+    int count;
+    char **targets;
+} Targets;
+
+Option options[FLAGS_COUNT];
 Flags flags;
+Targets targets;
 
-char *sSearchTerm;
-char **aTargets;
+String sSearchTerm;
 
-void help(const char *scriptname);
+void help(String scriptname, int exitCode);
 
-int checkFlagsExistence(int argc, char **argv, const char *sFlags);
+void checkFlagsExistence(int argc, char **argv, Option *flag);
 
-int flagHelp(int argc, char **argv);
+int flagHelp(String str);
 
-int flagCaseSensitive(int argc, char **argv);
+int flagCaseSensitive(String str);
 
-int flagCount(int argc, char **argv);
+int flagCount(String str);
 
-int flagLineNumber(int argc, char **argv);
+int flagLineNumber(String str);
 
-int flagOutput(int argc, char **argv);
+int flagOutput(String str);
+
+void getFlagsFromArg(int argc, char **argv);
 
 void getSearchTermFromArg(char **argv);
 
-void getFlagsFromArg(int argc, char **argv);
+void getTargetsFromArg(int argc, char **argv);
+
+void parseArguments(int argc, char **argv);
+
+void memFree();
+
+int main(int argc, char **argv);
 
 #endif //LOCALIZA_LOCALIZA_H
