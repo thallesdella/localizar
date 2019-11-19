@@ -60,7 +60,7 @@ size_t maxLength(int size, char **matrix) {
             max = strlen(matrix[i]);
         }
     }
-    return max;
+    return max + 5;
 }
 
 void getFlagsFromArg(int argc, char **argv) {
@@ -71,7 +71,7 @@ void getFlagsFromArg(int argc, char **argv) {
 
 void getSearchTermFromArg(char **argv) {
     int searchTermPosition = flags.active + 1;
-    sSearchTerm = malloc(sizeof(char));
+    sSearchTerm = malloc(sizeof(char) * (strlen(argv[searchTermPosition]) + 5));
     strcpy(sSearchTerm, argv[searchTermPosition]);
 }
 
@@ -101,7 +101,7 @@ void parseArguments(int argc, char **argv) {
     }
 }
 
-void memFree() {
+void garbageCollector() {
     free(sSearchTerm);
 
     for (int i = 0; i < targets.count; ++i) {
@@ -122,6 +122,27 @@ void help(String scriptname, int exitCode) {
     printf("\t-d --out\t- Save an output copy without the search term\n");
 
     exit(exitCode);
+}
+
+void grep(String searchTerm) {
+    String buf = malloc(sizeof(char) * BUFSIZ);
+    FILE *targetFile;
+    for (int i = 0; i < targets.count; ++i) {
+        targetFile = fopen(targets.targets[i], "r");
+
+        if (targetFile == NULL) {
+            printf("%s:File not found", targets.targets[i]);
+            continue;
+        }
+
+        while (fgets(buf, BUFSIZ, targetFile) != NULL) {
+            if (strstr(searchTerm, buf) != NULL) {
+                printf("%s:%s", targets.targets[i], buf);
+            }
+        }
+        fclose(targetFile);
+    }
+    free(buf);
 }
 
 int main(int argc, char **argv) {
@@ -146,6 +167,8 @@ int main(int argc, char **argv) {
 
     parseArguments(argc, argv);
 
+    grep(sSearchTerm);
+
     /*printf("Flags:\nhelp:%d case:%d count:%d line:%d out:%d - active:%d\n", flags.flags[FLAG_HELP].status,
            flags.flags[FLAG_CASE].status, flags.flags[FLAG_COUNT].status, flags.flags[FLAG_NUMB].status,
            flags.flags[FLAG_OUT].status, flags.active);
@@ -157,6 +180,6 @@ int main(int argc, char **argv) {
         printf("%s\n", targets.targets[i]);
     }*/
 
-    memFree();
+    garbageCollector();
     return 0;
 }

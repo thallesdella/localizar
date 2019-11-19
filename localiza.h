@@ -61,7 +61,9 @@ void getTargetsFromArg(int argc, char **argv);
 
 void parseArguments(int argc, char **argv);
 
-void memFree();
+void garbageCollector();
+
+void grep(String searchTerm);
 
 int main(int argc, char **argv);
 
