@@ -6,62 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "localiza.h"
-
-void checkFlagsExistence(int argc, char **argv, Option *flag) {
-    for (int i = 1; i < argc; ++i) {
-        if (flag->verify(argv[i])) {
-            flag->status = 1;
-            flags.active = flags.active + 1;
-            return;
-        }
-    }
-    flag->status = 0;
-}
-
-int flagHelp(String str) {
-    if (strcmp(str, "-h") == 0 || strcmp(str, "--help") == 0) {
-        return 1;
-    }
-    return 0;
-}
-
-int flagCaseSensitive(String str) {
-    if (strcmp(str, "-i") == 0 || strcmp(str, "--case") == 0) {
-        return 1;
-    }
-    return 0;
-}
-
-int flagCount(String str) {
-    if (strcmp(str, "-c") == 0 || strcmp(str, "--count") == 0) {
-        return 1;
-    }
-    return 0;
-}
-
-int flagLineNumber(String str) {
-    if (strcmp(str, "-n") == 0 || strcmp(str, "--numb") == 0) {
-        return 1;
-    }
-    return 0;
-}
-
-int flagOutput(String str) {
-    if (strcmp(str, "-d") == 0 || strcmp(str, "--out") == 0) {
-        return 1;
-    }
-    return 0;
-}
-
-size_t maxLength(int size, char **matrix) {
-    size_t max = 0;
-    for (int i = 0; i < size; ++i) {
-        if (strlen(matrix[i]) > max) {
-            max = strlen(matrix[i]);
-        }
-    }
-    return max + 5;
-}
+#include "flags.h"
+#include "helpers.h"
 
 void getFlagsFromArg(int argc, char **argv) {
     for (int i = 0; i < flags.count; ++i) {
@@ -101,15 +47,6 @@ void parseArguments(int argc, char **argv) {
     }
 }
 
-void garbageCollector() {
-    free(sSearchTerm);
-
-    for (int i = 0; i < targets.count; ++i) {
-        free(targets.targets[i]);
-    }
-    free(targets.targets);
-}
-
 void help(String scriptname, int exitCode) {
     printf("-- USAGE --\n");
     printf("\t./%s [option... | null] [pattern] [file...]>\n", scriptname);
@@ -135,9 +72,13 @@ void grep(String searchTerm) {
             continue;
         }
 
-        while (fgets(buf, BUFSIZ, targetFile) != NULL) {
+        for (size_t i = 0; fscanf(targetFile, " %[^\n]", buf) != EOF; ++i) {
             if (strstr(searchTerm, buf) != NULL) {
-                printf("%s:%s", targets.targets[i], buf);
+                if (flags.flags[FLAG_NUMB].status) {
+                    printf("%s:%d:%s", targets.targets[i], i, buf);
+                }else{
+                    printf("%s:%s", targets.targets[i], buf);
+                }
             }
         }
         fclose(targetFile);
