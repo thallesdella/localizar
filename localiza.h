@@ -17,7 +17,6 @@ typedef char *String;
 
 typedef struct Option {
     int status;
-
     int (*verify)(String str);
 } Option;
 
@@ -51,6 +50,8 @@ int flagCount(String str);
 int flagLineNumber(String str);
 
 int flagOutput(String str);
+
+size_t maxLength(int size, char **matrix);
 
 void getFlagsFromArg(int argc, char **argv);
 

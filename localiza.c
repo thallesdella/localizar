@@ -53,6 +53,16 @@ int flagOutput(String str) {
     return 0;
 }
 
+size_t maxLength(int size, char **matrix) {
+    size_t max = 0;
+    for (int i = 0; i < size; ++i) {
+        if (strlen(matrix[i]) > max) {
+            max = strlen(matrix[i]);
+        }
+    }
+    return max;
+}
+
 void getFlagsFromArg(int argc, char **argv) {
     for (int i = 0; i < flags.count; ++i) {
         checkFlagsExistence(argc, argv, &flags.flags[i]);
@@ -68,13 +78,12 @@ void getSearchTermFromArg(char **argv) {
 void getTargetsFromArg(int argc, char **argv) {
     int initTargetPosition = flags.active + 2;
     targets.count = argc - initTargetPosition;
-    printf("%d %d", initTargetPosition, targets.count);
     targets.targets = malloc(sizeof(String) * targets.count);
 
-    int currentTargetPosition;
+    int currentTargetPosition = initTargetPosition;
     for (int i = 0; i < targets.count; ++i) {
-        currentTargetPosition = initTargetPosition + i;
-        strcpy(targets.targets[i], argv[currentTargetPosition]);
+        targets.targets[i] = malloc(sizeof(char) * maxLength(targets.count, argv));
+        strcpy(targets.targets[i], argv[currentTargetPosition++]);
     }
 }
 
@@ -94,12 +103,17 @@ void parseArguments(int argc, char **argv) {
 
 void memFree() {
     free(sSearchTerm);
+
+    for (int i = 0; i < targets.count; ++i) {
+        free(targets.targets[i]);
+    }
     free(targets.targets);
 }
 
 void help(String scriptname, int exitCode) {
     printf("-- USAGE --\n");
-    printf("\t./%s <params> search <files|directories>\n\n", scriptname);
+    printf("\t./%s [option... | null] [pattern] [file...]>\n", scriptname);
+    printf("\t./%s \"jesus\" bible.txt>\n\n", scriptname);
     printf("-- HELP --\n");
     printf("\t-h --help\t- Display help\n");
     printf("\t-i --case\t- Case sensitive search disable\n");
@@ -132,7 +146,7 @@ int main(int argc, char **argv) {
 
     parseArguments(argc, argv);
 
-    printf("Flags:\nhelp:%d case:%d count:%d line:%d out:%d - active:%d\n", flags.flags[FLAG_HELP].status,
+    /*printf("Flags:\nhelp:%d case:%d count:%d line:%d out:%d - active:%d\n", flags.flags[FLAG_HELP].status,
            flags.flags[FLAG_CASE].status, flags.flags[FLAG_COUNT].status, flags.flags[FLAG_NUMB].status,
            flags.flags[FLAG_OUT].status, flags.active);
 
@@ -141,9 +155,8 @@ int main(int argc, char **argv) {
     printf("targets:\n");
     for (int i = 0; i < targets.count; ++i) {
         printf("%s\n", targets.targets[i]);
-    }
+    }*/
 
-    printf("teste"); // APARECE
     memFree();
-    printf("teste"); // N APARECE
+    return 0;
 }
