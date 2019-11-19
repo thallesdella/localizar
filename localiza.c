@@ -49,8 +49,8 @@ void parseArguments(int argc, char **argv) {
 
 void help(String scriptname, int exitCode) {
     printf("-- USAGE --\n");
-    printf("\t./%s [option... | null] [pattern] [file...]>\n", scriptname);
-    printf("\t./%s \"jesus\" bible.txt>\n\n", scriptname);
+    printf("\t./%s [option... | null] [pattern] [file...]\n", scriptname);
+    printf("\t./%s jesus bible.txt\n\n", scriptname);
     printf("-- HELP --\n");
     printf("\t-h --help\t- Display help\n");
     printf("\t-i --case\t- Case sensitive search disable\n");
