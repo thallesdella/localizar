@@ -5,6 +5,8 @@
 #ifndef LOCALIZA_FLAGS_H
 #define LOCALIZA_FLAGS_H
 
+#include "dstring.h"
+
 #define FLAGS_COUNT 5
 
 #define FLAG_HELP 0
@@ -15,7 +17,8 @@
 
 typedef struct Option {
     int status;
-    int (*verify)(String str);
+
+    int (*verify)(dString str);
 } Option;
 
 typedef struct Flags {
@@ -27,16 +30,18 @@ typedef struct Flags {
 Option options[FLAGS_COUNT];
 Flags flags;
 
-void checkFlagsExistence(int argc, char **argv, Option *flag);
+void checkFlagsExistence(int argc, dStringVector argv, Option *flag);
 
-int flagHelp(String str);
+int getFlagStatus(int id);
 
-int flagCaseSensitive(String str);
+int flagHelp(dString str);
 
-int flagCount(String str);
+int flagCaseSensitive(dString str);
 
-int flagLineNumber(String str);
+int flagCount(dString str);
 
-int flagOutput(String str);
+int flagLineNumber(dString str);
+
+int flagOutput(dString str);
 
 #endif //LOCALIZA_FLAGS_H

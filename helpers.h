@@ -7,6 +7,4 @@
 
 size_t maxLength(int size, char **matrix);
 
-void garbageCollector();
-
 #endif //LOCALIZA_HELPERS_H

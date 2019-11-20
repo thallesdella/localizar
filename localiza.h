@@ -5,29 +5,33 @@
 #ifndef LOCALIZA_LOCALIZA_H
 #define LOCALIZA_LOCALIZA_H
 
-typedef char *String;
+#include "dstring.h"
 
 typedef struct Targets {
     int count;
-    char **targets;
+    dStringVector targets;
 } Targets;
 
 Targets targets;
 
-String sSearchTerm;
+dString sSearchTerm;
 
-void help(String scriptname, int exitCode);
+void help(dString scriptname, int exitCode);
 
-void getFlagsFromArg(int argc, char **argv);
+void getFlagsFromArg(int argc, dStringVector argv);
 
-void getSearchTermFromArg(char **argv);
+void getSearchTermFromArg(dStringVector argv);
 
-void getTargetsFromArg(int argc, char **argv);
+void getTargetsFromArg(int argc, dStringVector argv);
 
-void parseArguments(int argc, char **argv);
+void parseArguments(int argc, dStringVector argv);
 
-void grep(String searchTerm);
+void garbageCollector();
 
-int main(int argc, char **argv);
+int newLinePosition(FILE *stream, long int start);
+
+void grep(dString searchTerm);
+
+int main(int argc, dStringVector argv);
 
 #endif //LOCALIZA_LOCALIZA_H

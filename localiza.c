@@ -8,23 +8,24 @@
 #include "localiza.h"
 #include "flags.h"
 #include "helpers.h"
+#include "dstring.h"
 
-void getFlagsFromArg(int argc, char **argv) {
+void getFlagsFromArg(int argc, dStringVector argv) {
     for (int i = 0; i < flags.count; ++i) {
         checkFlagsExistence(argc, argv, &flags.flags[i]);
     };
 }
 
-void getSearchTermFromArg(char **argv) {
+void getSearchTermFromArg(dStringVector argv) {
     int searchTermPosition = flags.active + 1;
     sSearchTerm = malloc(sizeof(char) * (strlen(argv[searchTermPosition]) + 5));
     strcpy(sSearchTerm, argv[searchTermPosition]);
 }
 
-void getTargetsFromArg(int argc, char **argv) {
+void getTargetsFromArg(int argc, dStringVector argv) {
     int initTargetPosition = flags.active + 2;
     targets.count = argc - initTargetPosition;
-    targets.targets = malloc(sizeof(String) * targets.count);
+    targets.targets = malloc(sizeof(dString) * targets.count);
 
     int currentTargetPosition = initTargetPosition;
     for (int i = 0; i < targets.count; ++i) {
@@ -33,7 +34,7 @@ void getTargetsFromArg(int argc, char **argv) {
     }
 }
 
-void parseArguments(int argc, char **argv) {
+void parseArguments(int argc, dStringVector argv) {
     if (argc < 3) {
         help(argv[0], EXIT_FAILURE);
     }
@@ -42,12 +43,12 @@ void parseArguments(int argc, char **argv) {
     getSearchTermFromArg(argv);
     getTargetsFromArg(argc, argv);
 
-    if (flags.flags[FLAG_HELP].status) {
+    if (getFlagStatus(FLAG_HELP)) {
         help(argv[0], EXIT_SUCCESS);
     }
 }
 
-void help(String scriptname, int exitCode) {
+void help(dString scriptname, int exitCode) {
     printf("-- USAGE --\n");
     printf("\t./%s [option... | null] [pattern] [file...]\n", scriptname);
     printf("\t./%s jesus bible.txt\n\n", scriptname);
@@ -61,8 +62,19 @@ void help(String scriptname, int exitCode) {
     exit(exitCode);
 }
 
-void grep(String searchTerm) {
-    String buf = malloc(sizeof(char) * BUFSIZ);
+int newLinePosition(FILE *stream, long int start) {
+    int c = 0, i = 0;
+    while (c != '\n' && !feof(stream)) {
+        i = ftell(stream);
+        c = fgetc(stream);
+        //printf("char:%c - position:%d\n", c, i);
+    }
+    fseek(stream, start, SEEK_SET);
+    return i;
+}
+
+void grep(dString searchTerm) {
+    dString buf = malloc(sizeof(char));
     FILE *targetFile;
     for (int i = 0; i < targets.count; ++i) {
         targetFile = fopen(targets.targets[i], "r");
@@ -72,10 +84,20 @@ void grep(String searchTerm) {
             continue;
         }
 
-        for (size_t i = 0; fscanf(targetFile, " %[^\n]", buf) != EOF; ++i) {
-            if (strstr(searchTerm, buf) != NULL) {
-                if (flags.flags[FLAG_NUMB].status) {
-                    printf("%s:%d:%s", targets.targets[i], i, buf);
+        long int oldPosition = 0, newPosition = newLinePosition(targetFile, ftell(targetFile));
+        long int size = newPosition - oldPosition;
+        for (int line = 1; newPosition != 0; ++line) {
+            size = newPosition - oldPosition;
+            buf = realloc(buf, size);
+            fread(buf, size, 1, targetFile);
+
+            oldPosition = newPosition + 2;
+            fgetc(targetFile);
+            newPosition = newLinePosition(targetFile, oldPosition);
+
+            if (strstr(buf, searchTerm) != NULL) {
+                if (getFlagStatus(FLAG_NUMB)) {
+                    printf("%s:%d:%s", targets.targets[i], line, buf);
                 }else{
                     printf("%s:%s", targets.targets[i], buf);
                 }
@@ -86,7 +108,16 @@ void grep(String searchTerm) {
     free(buf);
 }
 
-int main(int argc, char **argv) {
+void garbageCollector() {
+    free(sSearchTerm);
+
+    for (int i = 0; i < targets.count; ++i) {
+        free(targets.targets[i]);
+    }
+    free(targets.targets);
+}
+
+int main(int argc, dStringVector argv) {
     options[FLAG_HELP].status = 0;
     options[FLAG_HELP].verify = flagHelp;
 
