@@ -25,18 +25,18 @@ void getSearchTermFromArg(dStringVector argv) {
 void getTargetsFromArg(int argc, dStringVector argv) {
     int initTargetPosition = flags.active + 2;
     targets.count = argc - initTargetPosition;
-    targets.targets = malloc(sizeof(dString) * targets.count);
+    targets.targets = malloc(sizeof(Target) * targets.count);
 
     int currentTargetPosition = initTargetPosition;
-    for (int i = 0; i < targets.count; ++i) {
-        targets.targets[i] = malloc(sizeof(char) * maxLength(targets.count, argv));
-        strcpy(targets.targets[i], argv[currentTargetPosition++]);
+    for (size_t i = 0; i < targets.count; ++i) {
+        targets.targets[i].path = malloc(sizeof(char) * maxLength(targets.count, argv));
+        strcpy(targets.targets[i].path, argv[currentTargetPosition++]);
     }
 }
 
 void parseArguments(int argc, dStringVector argv) {
     if (argc < 3) {
-        help(argv[0], EXIT_FAILURE);
+        displayFlagHelp(argv[0], EXIT_FAILURE);
     }
 
     getFlagsFromArg(argc, argv);
@@ -44,22 +44,8 @@ void parseArguments(int argc, dStringVector argv) {
     getTargetsFromArg(argc, argv);
 
     if (getFlagStatus(FLAG_HELP)) {
-        help(argv[0], EXIT_SUCCESS);
+        displayFlagHelp(argv[0], EXIT_SUCCESS);
     }
-}
-
-void help(dString scriptname, int exitCode) {
-    printf("-- USAGE --\n");
-    printf("\t./%s [option... | null] [pattern] [file...]\n", scriptname);
-    printf("\t./%s jesus bible.txt\n\n", scriptname);
-    printf("-- HELP --\n");
-    printf("\t-h --help\t- Display help\n");
-    printf("\t-i --case\t- Case sensitive search disable\n");
-    printf("\t-c --count\t- Count apperances\n");
-    printf("\t-n --numb\t- Display line number\n");
-    printf("\t-d --out\t- Save an output copy without the search term\n");
-
-    exit(exitCode);
 }
 
 int newLinePosition(FILE *stream, long int start) {
@@ -67,7 +53,6 @@ int newLinePosition(FILE *stream, long int start) {
     while (c != '\n' && !feof(stream)) {
         i = ftell(stream);
         c = fgetc(stream);
-        //printf("char:%c - position:%d\n", c, i);
     }
     fseek(stream, start, SEEK_SET);
     return i;
@@ -76,16 +61,20 @@ int newLinePosition(FILE *stream, long int start) {
 void grep(dString searchTerm) {
     dString buf = malloc(sizeof(char));
     FILE *targetFile;
-    for (int i = 0; i < targets.count; ++i) {
-        targetFile = fopen(targets.targets[i], "r");
+    targets.totalOccurrences = 0;
+
+    for (size_t i = 0; i < targets.count; ++i) {
+        targets.targets[i].occurrences = 0;
+        targetFile = fopen(targets.targets[i].path, "r");
 
         if (targetFile == NULL) {
-            printf("%s:File not found", targets.targets[i]);
+            printf("%s:File not found", targets.targets[i].path);
             continue;
         }
 
-        long int oldPosition = 0, newPosition = newLinePosition(targetFile, ftell(targetFile));
-        long int size = newPosition - oldPosition;
+        long int size = 0, oldPosition = 0;
+        long int newPosition = newLinePosition(targetFile, ftell(targetFile));
+
         for (int line = 1; newPosition != 0; ++line) {
             size = newPosition - oldPosition;
             buf = realloc(buf, size);
@@ -95,11 +84,21 @@ void grep(dString searchTerm) {
             fgetc(targetFile);
             newPosition = newLinePosition(targetFile, oldPosition);
 
-            if (strstr(buf, searchTerm) != NULL) {
-                if (getFlagStatus(FLAG_NUMB)) {
-                    printf("%s:%d:%s", targets.targets[i], line, buf);
-                }else{
-                    printf("%s:%s", targets.targets[i], buf);
+
+            dString hasString = (getFlagStatus(FLAG_CASE)
+                                 ? strstr(strToLower(buf), strToLower(searchTerm))
+                                 : strstr(buf, searchTerm));
+
+            if (hasString != NULL) {
+                targets.totalOccurrences = targets.totalOccurrences + 1;
+                targets.targets[i].occurrences = targets.targets[i].occurrences + 1;
+
+                if (!getFlagStatus(FLAG_COUNT)) {
+                    if (getFlagStatus(FLAG_NUMB)) {
+                        printf("%s:%d:%s", targets.targets[i].path, line, buf);
+                    } else {
+                        printf("%s:%s", targets.targets[i].path, buf);
+                    }
                 }
             }
         }
@@ -111,8 +110,9 @@ void grep(dString searchTerm) {
 void garbageCollector() {
     free(sSearchTerm);
 
-    for (int i = 0; i < targets.count; ++i) {
-        free(targets.targets[i]);
+    for (size_t i = 0; i < targets.count; ++i) {
+        free(&targets.targets[i]);
+        free(targets.targets[i].path);
     }
     free(targets.targets);
 }
@@ -141,16 +141,9 @@ int main(int argc, dStringVector argv) {
 
     grep(sSearchTerm);
 
-    /*printf("Flags:\nhelp:%d case:%d count:%d line:%d out:%d - active:%d\n", flags.flags[FLAG_HELP].status,
-           flags.flags[FLAG_CASE].status, flags.flags[FLAG_COUNT].status, flags.flags[FLAG_NUMB].status,
-           flags.flags[FLAG_OUT].status, flags.active);
-
-    printf("Search: %s\n", sSearchTerm);
-
-    printf("targets:\n");
-    for (int i = 0; i < targets.count; ++i) {
-        printf("%s\n", targets.targets[i]);
-    }*/
+    if (getFlagStatus(FLAG_COUNT)) {
+        displayFlagCount();
+    }
 
     garbageCollector();
     return 0;

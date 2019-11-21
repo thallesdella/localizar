@@ -7,16 +7,21 @@
 
 #include "dstring.h"
 
+typedef struct Target {
+    int isFile;
+    int isDir;
+    unsigned int occurrences;
+    dString path;
+} Target;
+
 typedef struct Targets {
-    int count;
-    dStringVector targets;
+    size_t count;
+    unsigned int totalOccurrences;
+    Target *targets;
 } Targets;
 
 Targets targets;
-
 dString sSearchTerm;
-
-void help(dString scriptname, int exitCode);
 
 void getFlagsFromArg(int argc, dStringVector argv);
 
@@ -26,11 +31,11 @@ void getTargetsFromArg(int argc, dStringVector argv);
 
 void parseArguments(int argc, dStringVector argv);
 
-void garbageCollector();
-
 int newLinePosition(FILE *stream, long int start);
 
 void grep(dString searchTerm);
+
+void garbageCollector(void);
 
 int main(int argc, dStringVector argv);
 

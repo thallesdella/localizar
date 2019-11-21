@@ -5,6 +5,12 @@
 #ifndef LOCALIZA_HELPERS_H
 #define LOCALIZA_HELPERS_H
 
-size_t maxLength(int size, char **matrix);
+#include "dstring.h"
+
+size_t maxLength(int size, dStringVector matrix);
+
+dString strToLower(dString string);
+
+dString strToUpper(dString string);
 
 #endif //LOCALIZA_HELPERS_H

@@ -30,6 +30,10 @@ typedef struct Flags {
 Option options[FLAGS_COUNT];
 Flags flags;
 
+void displayFlagHelp(dString scriptName, int exitCode);
+
+void displayFlagCount(void);
+
 void checkFlagsExistence(int argc, dStringVector argv, Option *flag);
 
 int getFlagStatus(int id);
