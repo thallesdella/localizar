@@ -7,8 +7,6 @@
 
 #include "dstring.h"
 
-typedef struct stat Stat;
-
 typedef struct Target {
     int isFile;
     int isDir;
@@ -18,17 +16,20 @@ typedef struct Target {
 
 typedef struct Targets {
     unsigned int count;
+    unsigned int pathMaxLength;
     unsigned int totalOccurrences;
     Target *targets;
 } Targets;
 
 Targets targets;
 
-int isFile(dString path);
-
-int isDir(dString path);
-
 int searchInTarget(dString searchTerm, dString targetPath);
+
+void scanDir(dString path);
+
+void initTargets(Targets *initTarget);
+
+void addTarget(dString targetPath, unsigned int targetPathLen);
 
 dString getTargetPath(int id);
 

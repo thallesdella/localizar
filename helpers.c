@@ -6,36 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <sys/stat.h>
 #include "helpers.h"
 #include "dstring.h"
 #include "targets.h"
-
-unsigned int maxLength(unsigned int size, dStringVector matrix) {
-    size_t max = 0, len;
-    for (unsigned int i = 0; i < size; ++i) {
-        len = strlen(matrix[i]);
-        if (len > max) {
-            max = len;
-        }
-    }
-    return max + 5;
-}
-
-unsigned int maxLengthTargetPath(dString newPath) {
-    size_t max = 0, len;
-    for (unsigned int i = 0; i < targets.count; ++i) {
-        len = strlen(targets.targets[i].path);
-        if (len > max) {
-            max = len;
-        }
-    }
-
-    len = strlen(newPath);
-    if (len > max) {
-        return len + 5;
-    }
-    return max + 5;
-}
 
 int newLinePosition(FILE *stream, long int start) {
     int c = 0, i = 0;
@@ -59,4 +33,18 @@ dString strToUpper(dString string) {
         string[i] = (char) toupper((int) string[i]);
     }
     return string;
+}
+
+int isFile(dString path) {
+    Stat statBuf;
+    stat(path, &statBuf);
+    return S_ISREG(statBuf.st_mode);
+}
+
+int isDir(dString path) {
+    Stat statBuf;
+    if (stat(path, &statBuf) != 0) {
+        return 0;
+    }
+    return S_ISDIR(statBuf.st_mode);
 }

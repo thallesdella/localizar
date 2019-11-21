@@ -2,7 +2,6 @@
 // Created by THALLES on 18/11/2019.
 //
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "localiza.h"
@@ -25,30 +24,28 @@ void getSearchTermFromArg(dStringVector argv) {
 
 void getTargetsFromArg(int argc, dStringVector argv) {
     int initTargetPosition = flags.active + 2;
-    targets.count = argc - initTargetPosition;
-    targets.targets = malloc(sizeof(Target) * targets.count);
-
     int currentTargetPosition = initTargetPosition;
-    for (size_t i = 0; i < targets.count; ++i) {
-        targets.targets[i].path = malloc(sizeof(char) * maxLength(targets.count, argv));
-        strcpy(targets.targets[i].path, argv[currentTargetPosition++]);
-        targets.targets[i].isFile = isFile(getTargetPath(i));
-        targets.targets[i].isDir = isDir(getTargetPath(i));
+    int targetsCount = argc - initTargetPosition;
+
+    for (unsigned int i = 0; i < targetsCount; ++i) {
+        addTarget(argv[currentTargetPosition], strlen(argv[currentTargetPosition]));
+        currentTargetPosition = currentTargetPosition + 1;
     }
 }
 
 void parseArguments(int argc, dStringVector argv) {
-    if (argc < 3) {
-        displayFlagHelp(argv[0], EXIT_FAILURE);
-    }
-
     getFlagsFromArg(argc, argv);
-    getSearchTermFromArg(argv);
-    getTargetsFromArg(argc, argv);
 
     if (getFlagStatus(FLAG_HELP)) {
         displayFlagHelp(argv[0], EXIT_SUCCESS);
     }
+
+    if (argc < 3) {
+        displayFlagHelp(argv[0], EXIT_FAILURE);
+    }
+
+    getSearchTermFromArg(argv);
+    getTargetsFromArg(argc, argv);
 }
 
 void grep(dString searchTerm) {
@@ -58,7 +55,7 @@ void grep(dString searchTerm) {
         targets.targets[i].occurrences = 0;
 
         if (targets.targets[i].isDir) {
-            scanDir();
+            scanDir(getTargetPath(i));
         } else {
             int result = searchInTarget(searchTerm, getTargetPath(i));
             if (result >= 0) {
@@ -98,6 +95,8 @@ int main(int argc, dStringVector argv) {
     flags.active = 0;
     flags.count = FLAGS_COUNT;
     flags.flags = options;
+
+    initTargets(&targets);
 
     parseArguments(argc, argv);
 

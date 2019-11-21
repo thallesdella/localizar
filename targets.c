@@ -6,53 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#include <sys/stat.h>
 #include "targets.h"
 #include "flags.h"
 #include "helpers.h"
 #include "dstring.h"
-
-int isFile(dString path) {
-    Stat statBuf;
-    stat(path, &statBuf);
-    return S_ISREG(statBuf.st_mode);
-}
-
-int isDir(dString path) {
-    Stat statBuf;
-    if (stat(path, &statBuf) != 0) {
-        return 0;
-    }
-    return S_ISDIR(statBuf.st_mode);
-}
-
-dString getTargetPath(int id) {
-    return targets.targets[id].path;
-}
-
-void scanDir(dString path) {
-    DIR *d = opendir(path);
-    struct dirent *dir;
-
-    if (d != NULL) {
-        while ((dir = readdir(d)) != NULL) {
-            if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
-                continue;
-            }
-
-            unsigned int id = targets.count;
-            unsigned int size = maxLengthTargetPath(dir->d_name);
-
-            targets.count = targets.count + 1;
-            targets.targets = realloc(targets.targets, sizeof(Target) * targets.count);
-            targets.targets[id].path = realloc(targets.targets[id].path, sizeof(char) * size);
-            targets.targets[id].isFile = isFile(dir->d_name);
-            targets.targets[id].isDir = isDir(dir->d_name);
-            strcpy(targets.targets[id].path, dir->d_name);
-        }
-        closedir(d);
-    }
-}
 
 int searchInTarget(dString searchTerm, dString targetPath) {
     FILE *targetFile = fopen(targetPath, "r");
@@ -96,4 +53,53 @@ int searchInTarget(dString searchTerm, dString targetPath) {
     free(buf);
     fclose(targetFile);
     return occurrences;
+}
+
+void scanDir(dString path) {
+    DIR *targetDir = opendir(path);
+    struct dirent *dir;
+
+    if (targetDir == NULL) {
+        printf("%s:File not found", path);
+        return;
+    }
+
+    while ((dir = readdir(targetDir)) != NULL) {
+        if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
+            continue;
+        }
+        addTarget(dir->d_name, dir->d_namlen);
+    }
+    closedir(targetDir);
+}
+
+void initTargets(Targets *initTarget) {
+    initTarget->count = 0;
+    initTarget->pathMaxLength = 0;
+    initTarget->targets = malloc(sizeof(Target));
+    initTarget->targets[0].path = malloc(sizeof(char));
+}
+
+void addTarget(dString targetPath, unsigned int targetPathLen) {
+    unsigned int id = targets.count;
+
+    targets.count = targets.count + 1;
+
+    if (targets.count > 1) {
+        targets.targets = realloc(targets.targets, sizeof(Target) * targets.count);
+    }
+
+    targetPathLen = targetPathLen + 5;
+    if (targetPathLen > targets.pathMaxLength) {
+        targets.pathMaxLength = targetPathLen;
+        targets.targets[id].path = realloc(targets.targets[id].path, sizeof(char) * targets.pathMaxLength);
+    }
+
+    targets.targets[id].isFile = isFile(targetPath);
+    targets.targets[id].isDir = isDir(targetPath);
+    strcpy(targets.targets[id].path, targetPath);
+}
+
+dString getTargetPath(int id) {
+    return targets.targets[id].path;
 }
