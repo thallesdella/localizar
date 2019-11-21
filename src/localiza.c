@@ -7,11 +7,12 @@
 #include "localiza.h"
 #include "targets.h"
 #include "flags.h"
-#include "dstring.h"
+#include "helpers/structs.h"
+#include "helpers/dstring.h"
 
 void getFlagsFromArg(int argc, dStringVector argv) {
     for (int i = 0; i < flags.count; ++i) {
-        checkFlagsExistence(argc, argv, &flags.flags[i]);
+        checkFlagsExistence(&flags, &flags.flags[i], argc, argv);
     };
 }
 
@@ -27,7 +28,7 @@ void getTargetsFromArg(int argc, dStringVector argv) {
     int targetsCount = argc - initTargetPosition;
 
     for (unsigned int i = 0; i < targetsCount; ++i) {
-        addTarget(argv[currentTargetPosition], strlen(argv[currentTargetPosition]));
+        addTarget(&targets, argv[currentTargetPosition], strlen(argv[currentTargetPosition]));
         currentTargetPosition = currentTargetPosition + 1;
     }
 }
@@ -35,7 +36,7 @@ void getTargetsFromArg(int argc, dStringVector argv) {
 void parseArguments(int argc, dStringVector argv) {
     getFlagsFromArg(argc, argv);
 
-    if (getFlagStatus(FLAG_HELP)) {
+    if (getFlagStatus(flags, FLAG_HELP)) {
         displayFlagHelp(argv[0], EXIT_SUCCESS);
     }
 
@@ -54,9 +55,9 @@ void grep(dString searchTerm) {
         targets.targets[i].occurrences = 0;
 
         if (targets.targets[i].isDir) {
-            scanDir(getTargetPath(i));
+            scanDir(&targets, getTargetPath(targets, i));
         } else {
-            int result = searchInTarget(searchTerm, getTargetPath(i));
+            int result = searchInTarget(flags, searchTerm, getTargetPath(targets, i));
             if (result >= 0) {
                 targets.targets[i].occurrences = result;
                 targets.totalOccurrences = targets.totalOccurrences + result;
@@ -70,7 +71,7 @@ void garbageCollector() {
     free(sSearchTerm);
 
     for (unsigned int i = 0; i < targets.count; ++i) {
-        free(getTargetPath(i));
+        free(getTargetPath(targets, i));
     }
     free(targets.targets);
 }
@@ -86,7 +87,7 @@ int main(int argc, dStringVector argv) {
 
     grep(sSearchTerm);
 
-    if (getFlagStatus(FLAG_COUNT)) {
+    if (getFlagStatus(flags, FLAG_COUNT)) {
         displayFlagCount(targets);
     }
 

@@ -6,7 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "flags.h"
-#include "targets.h"
+#include "helpers/structs.h"
+#include "helpers/dstring.h"
 
 void initFlags(Flags *structFlags, Option *arrStructOption, Vflags *func, int flagsCount) {
     for (int i = 0; i < flagsCount; ++i) {
@@ -16,7 +17,7 @@ void initFlags(Flags *structFlags, Option *arrStructOption, Vflags *func, int fl
 
     structFlags->active = 0;
     structFlags->count = flagsCount;
-    structFlags->flags = options;
+    structFlags->flags = arrStructOption;
 }
 
 void displayFlagHelp(dString scriptName, int exitCode) {
@@ -46,18 +47,17 @@ void displayFlagCount(Targets target) {
     }
 }
 
-void checkFlagsExistence(int argc, dStringVector argv, Option *flag) {
+void checkFlagsExistence(Flags *flags, Option *option, int argc, dStringVector argv) {
     for (int i = 1; i < argc; ++i) {
-        if (flag->verify(argv[i])) {
-            flag->status = 1;
-            flags.active = flags.active + 1;
+        if (option->verify(argv[i])) {
+            option->status = 1;
+            flags->active = flags->active + 1;
             return;
         }
     }
-    flag->status = 0;
 }
 
-int getFlagStatus(int id) {
+int getFlagStatus(Flags flags, int id) {
     return flags.flags[id].status;
 }
 

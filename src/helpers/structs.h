@@ -2,8 +2,8 @@
 // Created by Thalles on 21/11/2019.
 //
 
-#ifndef LOCALIZA_TARGETS_H
-#define LOCALIZA_TARGETS_H
+#ifndef LOCALIZA_STRUCTS_H
+#define LOCALIZA_STRUCTS_H
 
 #include "dstring.h"
 
@@ -21,16 +21,16 @@ typedef struct Targets {
     Target *targets;
 } Targets;
 
-Targets targets;
+typedef struct Option {
+    int status;
 
-int searchInTarget(dString searchTerm, dString targetPath);
+    int (*verify)(dString str);
+} Option;
 
-void scanDir(dString path);
+typedef struct Flags {
+    int count;
+    int active;
+    Option *flags;
+} Flags;
 
-void initTargets(Targets *initTarget);
-
-void addTarget(dString targetPath, unsigned int targetPathLen);
-
-dString getTargetPath(unsigned int id);
-
-#endif //LOCALIZA_TARGETS_H
+#endif //LOCALIZA_STRUCTS_H

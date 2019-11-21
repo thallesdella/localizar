@@ -5,8 +5,8 @@
 #ifndef LOCALIZA_FLAGS_H
 #define LOCALIZA_FLAGS_H
 
-#include "dstring.h"
-#include "targets.h"
+#include "helpers/structs.h"
+#include "helpers/dstring.h"
 
 #define FLAG_HELP 0
 #define FLAG_CASE 1
@@ -16,30 +16,15 @@
 
 typedef int (*Vflags)(dString);
 
-typedef struct Option {
-    int status;
-
-    int (*verify)(dString str);
-} Option;
-
-typedef struct Flags {
-    int count;
-    int active;
-    Option *flags;
-} Flags;
-
-Option *options;
-Flags flags;
-
 void initFlags(Flags *structFlags, Option *arrStructOption, Vflags *func, int flagsCount);
 
 void displayFlagHelp(dString scriptName, int exitCode);
 
 void displayFlagCount(Targets target);
 
-void checkFlagsExistence(int argc, dStringVector argv, Option *flag);
+void checkFlagsExistence(Flags *flags, Option *option, int argc, dStringVector argv);
 
-int getFlagStatus(int id);
+int getFlagStatus(Flags flags, int id);
 
 int flagHelp(dString str);
 

@@ -5,11 +5,17 @@
 #ifndef LOCALIZA_LOCALIZA_H
 #define LOCALIZA_LOCALIZA_H
 
-#include "dstring.h"
+#include "helpers/structs.h"
+#include "flags.h"
+#include "targets.h"
+#include "helpers/dstring.h"
 
 #define FLAGS_COUNT 5
 
+Option *options;
+Flags flags;
 dString sSearchTerm;
+Targets targets;
 
 void getFlagsFromArg(int argc, dStringVector argv);
 
