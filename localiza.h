@@ -7,6 +7,8 @@
 
 #include "dstring.h"
 
+#define FLAGS_COUNT 5
+
 dString sSearchTerm;
 
 void getFlagsFromArg(int argc, dStringVector argv);

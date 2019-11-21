@@ -7,7 +7,6 @@
 #include "localiza.h"
 #include "targets.h"
 #include "flags.h"
-#include "helpers.h"
 #include "dstring.h"
 
 void getFlagsFromArg(int argc, dStringVector argv) {
@@ -67,6 +66,7 @@ void grep(dString searchTerm) {
 }
 
 void garbageCollector() {
+    free(options);
     free(sSearchTerm);
 
     for (size_t i = 0; i < targets.count; ++i) {
@@ -77,24 +77,9 @@ void garbageCollector() {
 }
 
 int main(int argc, dStringVector argv) {
-    options[FLAG_HELP].status = 0;
-    options[FLAG_HELP].verify = flagHelp;
-
-    options[FLAG_CASE].status = 0;
-    options[FLAG_CASE].verify = flagCaseSensitive;
-
-    options[FLAG_COUNT].status = 0;
-    options[FLAG_COUNT].verify = flagCount;
-
-    options[FLAG_NUMB].status = 0;
-    options[FLAG_NUMB].verify = flagLineNumber;
-
-    options[FLAG_OUT].status = 0;
-    options[FLAG_OUT].verify = flagOutput;
-
-    flags.active = 0;
-    flags.count = FLAGS_COUNT;
-    flags.flags = options;
+    Vflags verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber, flagOutput};
+    options = malloc(sizeof(Option) * FLAGS_COUNT);
+    initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
 
     initTargets(&targets);
 
@@ -103,7 +88,7 @@ int main(int argc, dStringVector argv) {
     grep(sSearchTerm);
 
     if (getFlagStatus(FLAG_COUNT)) {
-        displayFlagCount();
+        displayFlagCount(targets);
     }
 
     garbageCollector();

@@ -2,14 +2,10 @@
 // Created by THALLES on 19/11/2019.
 //
 
-#include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
 #include <sys/stat.h>
 #include "helpers.h"
 #include "dstring.h"
-#include "targets.h"
 
 int newLinePosition(FILE *stream, long int start) {
     int c = 0, i = 0;
@@ -19,20 +15,6 @@ int newLinePosition(FILE *stream, long int start) {
     }
     fseek(stream, start, SEEK_SET);
     return i;
-}
-
-dString strToLower(dString string) {
-    for (size_t i = 0; i < strlen(string); ++i) {
-        string[i] = (char) tolower((int) string[i]);
-    }
-    return string;
-}
-
-dString strToUpper(dString string) {
-    for (size_t i = 0; i < strlen(string); ++i) {
-        string[i] = (char) toupper((int) string[i]);
-    }
-    return string;
 }
 
 int isFile(dString path) {

@@ -12,10 +12,6 @@ typedef struct stat Stat;
 
 int newLinePosition(FILE *stream, long int start);
 
-dString strToLower(dString string);
-
-dString strToUpper(dString string);
-
 int isFile(dString path);
 
 int isDir(dString path);

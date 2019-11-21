@@ -8,4 +8,8 @@
 typedef char *dString;
 typedef char **dStringVector;
 
+dString strToLower(dString string);
+
+dString strToUpper(dString string);
+
 #endif //LOCALIZA_DSTRING_H

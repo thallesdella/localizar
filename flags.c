@@ -8,6 +8,17 @@
 #include "flags.h"
 #include "targets.h"
 
+void initFlags(Flags *structFlags, Option *arrStructOption, Vflags *func, int flagsCount) {
+    for (int i = 0; i < flagsCount; ++i) {
+        arrStructOption[i].status = 0;
+        arrStructOption[i].verify = func[i];
+    }
+
+    structFlags->active = 0;
+    structFlags->count = flagsCount;
+    structFlags->flags = options;
+}
+
 void displayFlagHelp(dString scriptName, int exitCode) {
     printf("-- USAGE --\n");
     printf("\t./%s [option... | null] [pattern] [file...]\n", scriptName);
@@ -22,16 +33,16 @@ void displayFlagHelp(dString scriptName, int exitCode) {
     exit(exitCode);
 }
 
-void displayFlagCount(void) {
+void displayFlagCount(Targets target) {
     printf("OCCURRENCES: \n");
 
-    for (size_t i = 0; i < targets.count; ++i) {
-        printf("\t%s:%u %s\n", targets.targets[i].path, targets.targets[i].occurrences,
-               (targets.targets[i].occurrences > 1 ? "founds" : "found"));
+    for (unsigned int i = 0; i < target.count; ++i) {
+        printf("\t%s:%u %s\n", target.targets[i].path, target.targets[i].occurrences,
+               (target.targets[i].occurrences > 1 ? "founds" : "found"));
     }
 
-    if (targets.count > 1) {
-        printf("TOTAL:%u %s\n", targets.totalOccurrences, (targets.totalOccurrences > 1 ? "founds" : "found"));
+    if (target.count > 1) {
+        printf("TOTAL:%u %s\n", target.totalOccurrences, (target.totalOccurrences > 1 ? "founds" : "found"));
     }
 }
 
