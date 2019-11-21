@@ -5,13 +5,10 @@
 #ifndef LOCALIZA_HELPERS_H
 #define LOCALIZA_HELPERS_H
 
+#include <stdio.h>
 #include "dstring.h"
 
 typedef struct stat Stat;
-
-unsigned int maxLength(unsigned int size, dStringVector matrix);
-
-unsigned int maxLengthTargetPath(dString newPath);
 
 int newLinePosition(FILE *stream, long int start);
 
