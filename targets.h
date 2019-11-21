@@ -31,6 +31,6 @@ void initTargets(Targets *initTarget);
 
 void addTarget(dString targetPath, unsigned int targetPathLen);
 
-dString getTargetPath(int id);
+dString getTargetPath(unsigned int id);
 
 #endif //LOCALIZA_TARGETS_H

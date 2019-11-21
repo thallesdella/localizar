@@ -100,6 +100,6 @@ void addTarget(dString targetPath, unsigned int targetPathLen) {
     strcpy(targets.targets[id].path, targetPath);
 }
 
-dString getTargetPath(int id) {
+dString getTargetPath(unsigned int id) {
     return targets.targets[id].path;
 }

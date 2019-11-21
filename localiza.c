@@ -69,8 +69,7 @@ void garbageCollector() {
     free(options);
     free(sSearchTerm);
 
-    for (size_t i = 0; i < targets.count; ++i) {
-        free(&targets.targets[i]);
+    for (unsigned int i = 0; i < targets.count; ++i) {
         free(getTargetPath(i));
     }
     free(targets.targets);
