@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "localiza.h"
+#include "targets.h"
 #include "flags.h"
 #include "helpers.h"
 #include "dstring.h"
@@ -31,6 +32,8 @@ void getTargetsFromArg(int argc, dStringVector argv) {
     for (size_t i = 0; i < targets.count; ++i) {
         targets.targets[i].path = malloc(sizeof(char) * maxLength(targets.count, argv));
         strcpy(targets.targets[i].path, argv[currentTargetPosition++]);
+        targets.targets[i].isFile = isFile(getTargetPath(i));
+        targets.targets[i].isDir = isDir(getTargetPath(i));
     }
 }
 
@@ -48,63 +51,22 @@ void parseArguments(int argc, dStringVector argv) {
     }
 }
 
-int newLinePosition(FILE *stream, long int start) {
-    int c = 0, i = 0;
-    while (c != '\n' && !feof(stream)) {
-        i = ftell(stream);
-        c = fgetc(stream);
-    }
-    fseek(stream, start, SEEK_SET);
-    return i;
-}
-
 void grep(dString searchTerm) {
-    dString buf = malloc(sizeof(char));
-    FILE *targetFile;
     targets.totalOccurrences = 0;
 
     for (size_t i = 0; i < targets.count; ++i) {
         targets.targets[i].occurrences = 0;
-        targetFile = fopen(targets.targets[i].path, "r");
 
-        if (targetFile == NULL) {
-            printf("%s:File not found", targets.targets[i].path);
-            continue;
-        }
-
-        long int size = 0, oldPosition = 0;
-        long int newPosition = newLinePosition(targetFile, ftell(targetFile));
-
-        for (int line = 1; newPosition != 0; ++line) {
-            size = newPosition - oldPosition;
-            buf = realloc(buf, size);
-            fread(buf, size, 1, targetFile);
-
-            oldPosition = newPosition + 2;
-            fgetc(targetFile);
-            newPosition = newLinePosition(targetFile, oldPosition);
-
-
-            dString hasString = (getFlagStatus(FLAG_CASE)
-                                 ? strstr(strToLower(buf), strToLower(searchTerm))
-                                 : strstr(buf, searchTerm));
-
-            if (hasString != NULL) {
-                targets.totalOccurrences = targets.totalOccurrences + 1;
-                targets.targets[i].occurrences = targets.targets[i].occurrences + 1;
-
-                if (!getFlagStatus(FLAG_COUNT)) {
-                    if (getFlagStatus(FLAG_NUMB)) {
-                        printf("%s:%d:%s", targets.targets[i].path, line, buf);
-                    } else {
-                        printf("%s:%s", targets.targets[i].path, buf);
-                    }
-                }
+        if (targets.targets[i].isDir) {
+            scanDir();
+        } else {
+            int result = searchInTarget(searchTerm, getTargetPath(i));
+            if (result >= 0) {
+                targets.targets[i].occurrences = result;
+                targets.totalOccurrences = targets.totalOccurrences + result;
             }
         }
-        fclose(targetFile);
     }
-    free(buf);
 }
 
 void garbageCollector() {
@@ -112,7 +74,7 @@ void garbageCollector() {
 
     for (size_t i = 0; i < targets.count; ++i) {
         free(&targets.targets[i]);
-        free(targets.targets[i].path);
+        free(getTargetPath(i));
     }
     free(targets.targets);
 }

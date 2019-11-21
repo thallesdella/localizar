@@ -7,7 +7,11 @@
 
 #include "dstring.h"
 
-size_t maxLength(int size, dStringVector matrix);
+unsigned int maxLength(unsigned int size, dStringVector matrix);
+
+unsigned int maxLengthTargetPath(dString newPath);
+
+int newLinePosition(FILE *stream, long int start);
 
 dString strToLower(dString string);
 

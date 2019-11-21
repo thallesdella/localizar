@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "flags.h"
-#include "localiza.h"
+#include "targets.h"
 
 void displayFlagHelp(dString scriptName, int exitCode) {
     printf("-- USAGE --\n");
