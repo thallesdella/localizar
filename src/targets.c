@@ -12,7 +12,7 @@
 #include "helpers/helpers.h"
 #include "helpers/dstring.h"
 
-int searchInTarget(Flags flags, dString searchTerm, dString targetPath) {
+int searchInTarget(Flags flags, SearchTerm searchTerm, dString targetPath) {
     FILE *targetFile = fopen(targetPath, "r");
 
     if (targetFile == NULL) {
@@ -34,12 +34,17 @@ int searchInTarget(Flags flags, dString searchTerm, dString targetPath) {
         fgetc(targetFile);
         newPosition = newLinePosition(targetFile, oldPosition);
 
+        int testsPassed = 0;
+        for (unsigned int i = 0; i < searchTerm.count; ++i) {
+            dString hasString = (!getFlagStatus(flags, FLAG_CASE)
+                                 ? strstr(strToLower(buf), strToLower(searchTerm.terms[i]))
+                                 : strstr(buf, searchTerm.terms[i]));
+            if (hasString != NULL) {
+                testsPassed = testsPassed + 1;
+            }
+        }
 
-        dString hasString = (getFlagStatus(flags, FLAG_CASE)
-                             ? strstr(strToLower(buf), strToLower(searchTerm))
-                             : strstr(buf, searchTerm));
-
-        if (hasString != NULL) {
+        if (testsPassed == searchTerm.count) {
             occurrences = occurrences + 1;
 
             if (!getFlagStatus(flags, FLAG_COUNT)) {

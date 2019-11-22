@@ -7,25 +7,25 @@
 #include "localiza.h"
 #include "targets.h"
 #include "flags.h"
+#include "searchTerm.h"
 #include "helpers/structs.h"
 #include "helpers/dstring.h"
 
 void getFlagsFromArg(int argc, dStringVector argv) {
-    for (int i = 0; i < flags.count; ++i) {
+    for (unsigned int i = 0; i < flags.count; ++i) {
         checkFlagsExistence(&flags, &flags.flags[i], argc, argv);
     };
 }
 
 void getSearchTermFromArg(dStringVector argv) {
-    int searchTermPosition = flags.active + 1;
-    sSearchTerm = malloc(sizeof(char) * (strlen(argv[searchTermPosition]) + 5));
-    strcpy(sSearchTerm, argv[searchTermPosition]);
+    unsigned int searchTermPosition = flags.active + 1;
+    addSearchTerm(&searchTerm, argv[searchTermPosition]);
 }
 
 void getTargetsFromArg(int argc, dStringVector argv) {
-    int initTargetPosition = flags.active + 2;
-    int currentTargetPosition = initTargetPosition;
-    int targetsCount = argc - initTargetPosition;
+    unsigned int initTargetPosition = flags.active + 2;
+    unsigned int currentTargetPosition = initTargetPosition;
+    unsigned int targetsCount = argc - initTargetPosition;
 
     for (unsigned int i = 0; i < targetsCount; ++i) {
         addTarget(&targets, argv[currentTargetPosition], strlen(argv[currentTargetPosition]));
@@ -48,7 +48,7 @@ void parseArguments(int argc, dStringVector argv) {
     getTargetsFromArg(argc, argv);
 }
 
-void grep(dString searchTerm) {
+void grep(void) {
     targets.totalOccurrences = 0;
 
     for (size_t i = 0; i < targets.count; ++i) {
@@ -68,7 +68,6 @@ void grep(dString searchTerm) {
 
 void garbageCollector() {
     free(options);
-    free(sSearchTerm);
 
     for (unsigned int i = 0; i < targets.count; ++i) {
         free(getTargetPath(targets, i));
@@ -81,11 +80,13 @@ int main(int argc, dStringVector argv) {
     options = malloc(sizeof(Option) * FLAGS_COUNT);
     initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
 
+    initSearchTerm(&searchTerm);
+
     initTargets(&targets);
 
     parseArguments(argc, argv);
 
-    grep(sSearchTerm);
+    grep();
 
     if (getFlagStatus(flags, FLAG_COUNT)) {
         displayFlagCount(targets);
