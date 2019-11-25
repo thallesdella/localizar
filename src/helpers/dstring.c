@@ -26,7 +26,7 @@ dStringVector initStringVector(unsigned int size) {
     return malloc(sizeof(dString) * size);
 }
 
-void alterStringVector(dStringVector vector, unsigned int size, dStringVector content) {
+void copyStringVector(dStringVector vector, unsigned int size, dStringVector content) {
     for (unsigned int i = 0; i < size; ++i) {
         alterString(vector[i], content[i]);
     }
@@ -51,6 +51,12 @@ dString strToUpper(dString string) {
         string[i] = (char) toupper((int) string[i]);
     }
     return string;
+}
+
+void applyFuncToStrings(dStringVector vector, unsigned int size, dString (*func)(dString)) {
+    for (unsigned int i = 0; i < size; ++i) {
+        vector[i] = func(vector[i]);
+    }
 }
 
 int countAppearances(dString string, dString token) {
@@ -78,8 +84,13 @@ void explode(dString string, dString delimiter, dStringVector result) {
     }
 }
 
-void implode(dStringVector vector, dString glue, dString result) {
-
+void implode(dStringVector vector, unsigned int size, dString glue, dString result) {
+    for (unsigned int i = 0; i < size; ++i) {
+        strcat(result, vector[i]);
+        if ((i + 1) < size) {
+            strcat(result, glue);
+        }
+    }
 }
 
 /*
