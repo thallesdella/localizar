@@ -12,4 +12,8 @@ dString strToLower(dString string);
 
 dString strToUpper(dString string);
 
+int countAppearances(dString string, dString token);
+
+void explode(dString string, dString delimiter, dStringVector result);
+
 #endif //LOCALIZA_DSTRING_H

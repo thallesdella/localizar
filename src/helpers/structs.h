@@ -21,7 +21,6 @@ typedef struct Flags {
 
 typedef struct SearchTerm {
     unsigned int count;
-    unsigned int size;
     dStringVector terms;
 } SearchTerm;
 

@@ -21,38 +21,77 @@ dString strToUpper(dString string) {
     return string;
 }
 
-int explode(dString string, char delimiter, dStringVector *result) {
-    dString strCopy = string, positionOfD, dst;
-    dStringVector build;
-    int size = 1;
+int countAppearances(dString string, dString token) {
+    unsigned int sizeOfToken = strlen(token);
+    dString positionOfToken = string;
+    int i = 0;
 
-    // Find number of times to explode
-    while ((positionOfD = strchr(strCopy, delimiter)) != NULL) {
-        ++size;
-        strCopy = positionOfD + 1;
+    for (i; (positionOfD = strstr(positionOfToken, token)) != NULL; ++i) {
+        positionOfD = positionOfD + sizeOfToken;
     }
+    i = i + 1;
 
-    // Equivalent as the for way
-    /*
-     * build = malloc(size * sizeof(dString));
-     * for (int i = 0; i < size; ++i){
-     *  build[i] = malloc(strlen(string) + 1) * sizeof(char));
-     * }
-     */
-    build = malloc(size * sizeof(dString) + (strlen(string) + 1) * sizeof(char));
-
-    /*src = str;
-    dst = (char *) arr + size * sizeof(char *);
-    for (i = 0; i < size; ++i) {
-        if ((end = strchr(src, delimiter)) == NULL)
-            end = src + strlen(src);
-        arr[i] = dst;
-        strncpy(dst, src, end - src);
-        dst[end - src] = '\0';
-        dst += end - src + 1;
-        src = end + 1;
-    }
-    *arr_ptr = arr;*/
-
-    return size;
+    return i;
 }
+
+void explode(dString string, dString delimiter, dStringVector result) {
+    dString tok;
+    int i = 0;
+
+    tok = strtok (string, delimiter);
+    while (tok != NULL) {
+        result[i] = malloc(sizeof(char) * strlen(tok));
+        strcpy(result[i], tok);
+        printf("%s - %s\n", tok, result[i]);
+        tok = strtok (NULL, delimiter);
+        i = i + 1;
+    }
+}
+
+/*
+
+typedef char * dString;
+typedef char ** dStringVector;
+
+int countOccurrences(dString string, dString delimiter){
+    unsigned int sizeOfDelimiter = strlen(delimiter);
+    dString positionOfD = string;
+    int i = 0;
+
+    for (i; (positionOfD = strstr(positionOfD, delimiter)) != NULL; ++i) {
+        positionOfD = positionOfD + sizeOfDelimiter;
+    }
+    i = i + 1;
+
+    return i;
+}
+
+void explode(dString string, dString delimiter, dStringVector result){
+    dString tok;
+    int i = 0;
+
+    tok = strtok (string, delimiter);
+    while (tok != NULL) {
+        result[i] = malloc(sizeof(char) * strlen(tok));
+        strcpy(result[i], tok);
+        printf("%s - %s\n", tok, result[i]);
+        tok = strtok (NULL, delimiter);
+        i = i + 1;
+    }
+}
+
+int main(int argc, dStringVector argv){
+    int size = countOccurrences(argv[1], argv[2]);
+    dStringVector result = malloc(sizeof(dString) * size);
+
+    explode(argv[1], argv[2], result);
+
+    for (int i = 0; i < size; ++i) {
+        printf("%d:%s\n", i, result[i]);
+        free(result[i]);
+    }
+
+    free(result);
+}
+
+*/
