@@ -7,6 +7,33 @@
 #include <ctype.h>
 #include "dstring.h"
 
+dString initString(int size) {
+    return malloc(sizeof(char) * size);
+}
+
+void alterString(dString string, dString content) {
+
+}
+
+void freeString(dString string) {
+    free(string);
+}
+
+dStringVector initStringVector() {
+
+}
+
+void alterStringVector(dStringVector string, dString content) {
+
+}
+
+void freeStringVector(dStringVector string, int size) {
+    for (int i = 0; i < size; ++i) {
+        free(string[i]);
+    }
+    free(string);
+}
+
 dString strToLower(dString string) {
     for (size_t i = 0; i < strlen(string); ++i) {
         string[i] = (char) tolower((int) string[i]);
@@ -26,8 +53,8 @@ int countAppearances(dString string, dString token) {
     dString positionOfToken = string;
     int i = 0;
 
-    for (i; (positionOfD = strstr(positionOfToken, token)) != NULL; ++i) {
-        positionOfD = positionOfD + sizeOfToken;
+    for (i; (positionOfToken = strstr(positionOfToken, token)) != NULL; ++i) {
+        positionOfToken = positionOfToken + sizeOfToken;
     }
     i = i + 1;
 
@@ -38,12 +65,11 @@ void explode(dString string, dString delimiter, dStringVector result) {
     dString tok;
     int i = 0;
 
-    tok = strtok (string, delimiter);
+    tok = strtok(string, delimiter);
     while (tok != NULL) {
         result[i] = malloc(sizeof(char) * strlen(tok));
         strcpy(result[i], tok);
-        printf("%s - %s\n", tok, result[i]);
-        tok = strtok (NULL, delimiter);
+        tok = strtok(NULL, delimiter);
         i = i + 1;
     }
 }

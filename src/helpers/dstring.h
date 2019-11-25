@@ -8,6 +8,10 @@
 typedef char *dString;
 typedef char **dStringVector;
 
+void freeString(dString string);
+
+void freeStringVector(dStringVector string, int size);
+
 dString strToLower(dString string);
 
 dString strToUpper(dString string);

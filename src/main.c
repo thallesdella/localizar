@@ -70,6 +70,8 @@ void grep(void) {
 void garbageCollector() {
     free(options);
 
+    freeStringVector(searchTerm.terms, searchTerm.count);
+
     for (unsigned int i = 0; i < targets.count; ++i) {
         free(getTargetPath(targets, i));
     }
