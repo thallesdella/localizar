@@ -8,13 +8,13 @@
 #include "dstring.h"
 
 dString initString(dString content) {
-    dString buf = malloc(sizeof(char) * strlen(content));
+    dString buf = malloc(sizeof(char) * (strlen(content) + 1));
     strcpy(buf, content);
     return buf;
 }
 
 void alterString(dString string, dString content) {
-    string = realloc(string, sizeof(char) * strlen(content));
+    string = realloc(string, sizeof(char) * (strlen(content) + 1));
     strcpy(string, content);
 }
 
@@ -76,6 +76,10 @@ void explode(dString string, dString delimiter, dStringVector result) {
         tok = strtok(NULL, delimiter);
         i = i + 1;
     }
+}
+
+void implode(dStringVector vector, dString glue, dString result) {
+
 }
 
 /*

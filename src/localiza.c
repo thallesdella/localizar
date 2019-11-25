@@ -29,7 +29,7 @@ void getTargetsFromArg(int argc, dStringVector argv) {
     unsigned int targetsCount = argc - initTargetPosition;
 
     for (unsigned int i = 0; i < targetsCount; ++i) {
-        addTarget(&targets, argv[currentTargetPosition], strlen(argv[currentTargetPosition]));
+        addTarget(&targets, argv[currentTargetPosition]);
         currentTargetPosition = currentTargetPosition + 1;
     }
 }

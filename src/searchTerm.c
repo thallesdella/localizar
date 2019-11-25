@@ -2,15 +2,13 @@
 // Created by Thalles on 21/11/2019.
 //
 
-#include <stdlib.h>
-#include <string.h>
 #include "searchTerm.h"
 #include "helpers/structs.h"
 #include "helpers/dstring.h"
 
 void initSearchTerm(SearchTerm *searchTerm) {
     searchTerm->count = 0;
-    searchTerm->terms = malloc(sizeof(dString));
+    searchTerm->terms = initStringVector(searchTerm->count);
 }
 
 void addSearchTerm(SearchTerm *searchTerm, dString term) {
@@ -20,7 +18,6 @@ void addSearchTerm(SearchTerm *searchTerm, dString term) {
         explode(term, "*", searchTerm->terms);
     } else {
         searchTerm->count = 1;
-        searchTerm->terms[0] = malloc(sizeof(char) * strlen(term));
-        strcpy(searchTerm->terms[0], term);
+        searchTerm->terms[0] = initString(term);
     }
 }

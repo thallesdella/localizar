@@ -14,7 +14,7 @@ void scanDir(Targets *target, dString path);
 
 void initTargets(Targets *target);
 
-void addTarget(Targets *target, dString targetPath, unsigned int targetPathLen);
+void addTarget(Targets *target, dString targetPath);
 
 dString getTargetPath(Targets target, unsigned int id);
 
