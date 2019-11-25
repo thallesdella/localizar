@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "main.h"
+#include "localiza.h"
 #include "targets.h"
 #include "flags.h"
 #include "searchTerm.h"
@@ -88,11 +88,6 @@ int main(int argc, dStringVector argv) {
     initTargets(&targets);
 
     parseArguments(argc, argv);
-
-    printf("search:%d\n", searchTerm.count);
-    for (int i = 0; i < searchTerm.count; ++i) {
-        printf("%s\n", searchTerm.terms[i]);
-    }
 
     grep();
 

@@ -8,9 +8,17 @@
 typedef char *dString;
 typedef char **dStringVector;
 
+dString initString(dString content);
+
+void alterString(dString string, dString content);
+
 void freeString(dString string);
 
-void freeStringVector(dStringVector string, int size);
+dStringVector initStringVector(unsigned int size);
+
+void alterStringVector(dStringVector vector, unsigned int size, dStringVector content);
+
+void freeStringVector(dStringVector string, unsigned int size);
 
 dString strToLower(dString string);
 
