@@ -2,15 +2,13 @@
 // Created by THALLES on 18/11/2019.
 //
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "localiza.h"
 #include "targets.h"
 #include "flags.h"
 #include "searchTerm.h"
-#include "helpers/structs.h"
-#include "helpers/dstring.h"
+#include "structs.h"
+#include "dstring.h"
 
 void getFlagsFromArg(int argc, dStringVector argv) {
     for (unsigned int i = 0; i < flags.count; ++i) {

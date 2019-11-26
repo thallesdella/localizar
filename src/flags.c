@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "flags.h"
-#include "helpers/structs.h"
-#include "helpers/dstring.h"
+#include "structs.h"
+#include "dstring.h"
 
 void initFlags(Flags *structFlags, Option *arrStructOption, Vflags *func, int flagsCount) {
     for (int i = 0; i < flagsCount; ++i) {

@@ -3,8 +3,8 @@
 //
 
 #include "searchTerm.h"
-#include "helpers/structs.h"
-#include "helpers/dstring.h"
+#include "structs.h"
+#include "dstring.h"
 
 void initSearchTerm(SearchTerm *searchTerm) {
     searchTerm->count = 0;

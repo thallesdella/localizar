@@ -5,8 +5,8 @@
 #ifndef LOCALIZA_SEARCHTERM_H
 #define LOCALIZA_SEARCHTERM_H
 
-#include "helpers/structs.h"
-#include "helpers/dstring.h"
+#include "structs.h"
+#include "dstring.h"
 
 void initSearchTerm(SearchTerm *searchTerm);
 

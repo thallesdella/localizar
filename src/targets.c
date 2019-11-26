@@ -8,9 +8,9 @@
 #include <dirent.h>
 #include "targets.h"
 #include "flags.h"
-#include "helpers/structs.h"
-#include "helpers/helpers.h"
-#include "helpers/dstring.h"
+#include "structs.h"
+#include "helpers.h"
+#include "dstring.h"
 
 int searchInTarget(Flags flags, SearchTerm searchTerm, dString targetPath) {
     FILE *targetFile = fopen(targetPath, "r");

@@ -5,8 +5,8 @@
 #ifndef LOCALIZA_TARGETS_H
 #define LOCALIZA_TARGETS_H
 
-#include "helpers/structs.h"
-#include "helpers/dstring.h"
+#include "structs.h"
+#include "dstring.h"
 
 int searchInTarget(Flags flags, SearchTerm searchTerm, dString targetPath);
 
