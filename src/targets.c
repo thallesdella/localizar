@@ -49,9 +49,9 @@ int searchInTarget(Flags flags, SearchTerm searchTerm, dString targetPath) {
 
             if (!getFlagStatus(flags, FLAG_COUNT)) {
                 if (getFlagStatus(flags, FLAG_NUMB)) {
-                    printf("%s:%d:%s", targetPath, line, buf);
+                    printf("%s:%d:%s\n", targetPath, line, buf);
                 } else {
-                    printf("%s:%s", targetPath, buf);
+                    printf("%s:%s\n", targetPath, buf);
                 }
             }
         }
@@ -93,6 +93,7 @@ void addTarget(Targets *target, dString targetPath) {
         target->targets = realloc(target->targets, sizeof(Target) * target->count);
     }
 
+    target->targets[id].occurrences = 0;
     target->targets[id].isFile = isFile(targetPath);
     target->targets[id].isDir = isDir(targetPath);
     target->targets[id].path = initString(targetPath);

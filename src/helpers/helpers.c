@@ -17,16 +17,30 @@ int newLinePosition(FILE *stream, long int start) {
     return i;
 }
 
+int fileExists(dString path) {
+    Stat statBuf;
+    if (stat(path, &statBuf) == 0) {
+        return 1;
+    }
+    return 0;
+}
+
 int isFile(dString path) {
     Stat statBuf;
     stat(path, &statBuf);
-    return S_ISREG(statBuf.st_mode);
+
+    if (stat(path, &statBuf) == 0) {
+        return S_ISREG(statBuf.st_mode);
+    }
+    return 0;
 }
 
 int isDir(dString path) {
+    printf("%s - exists:%d\n", path, fileExists(path));
     Stat statBuf;
-    if (stat(path, &statBuf) != 0) {
-        return 0;
+
+    if (stat(path, &statBuf) == 0) {
+        return S_ISDIR(statBuf.st_mode);
     }
-    return S_ISDIR(statBuf.st_mode);
+    return 0;
 }
