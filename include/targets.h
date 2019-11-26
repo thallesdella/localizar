@@ -5,16 +5,16 @@
 #ifndef LOCALIZA_TARGETS_H
 #define LOCALIZA_TARGETS_H
 
-#include "helpers/structs.h"
-#include "helpers/dstring.h"
+#include "structs.h"
+#include "dstring.h"
 
-int searchInTarget(Flags flags, dString searchTerm, dString targetPath);
+int searchInTarget(Flags flags, SearchTerm searchTerm, dString targetPath);
 
 void scanDir(Targets *target, dString path);
 
 void initTargets(Targets *target);
 
-void addTarget(Targets *target, dString targetPath, unsigned int targetPathLen);
+void addTarget(Targets *target, dString targetPath);
 
 dString getTargetPath(Targets target, unsigned int id);
 

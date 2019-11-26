@@ -5,8 +5,8 @@
 #ifndef LOCALIZA_FLAGS_H
 #define LOCALIZA_FLAGS_H
 
-#include "helpers/structs.h"
-#include "helpers/dstring.h"
+#include "structs.h"
+#include "dstring.h"
 
 #define FLAG_HELP 0
 #define FLAG_CASE 1
