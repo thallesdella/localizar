@@ -54,15 +54,16 @@ void grep(void) {
     for (size_t i = 0; i < targets.count; ++i) {
         targets.targets[i].occurrences = 0;
 
-        printf("-- %s:\n", strToUpper(getTargetPath(targets, i)));
         if (targets.targets[i].isDir) {
             scanDir(&targets, getTargetPath(targets, i));
         } else if (targets.targets[i].isFile) {
+            printf("-- %s:\n", strToUpper(getTargetPath(targets, i)));
             int result = searchInTarget(flags, searchTerm, getTargetPath(targets, i));
             if (result >= 0) {
                 targets.targets[i].occurrences = result;
                 targets.totalOccurrences = targets.totalOccurrences + result;
             }
+            printf("\n");
         } else {
             printf("%s:File or directory dont exist", getTargetPath(targets, i));
         }
@@ -91,11 +92,11 @@ int main(int argc, dStringVector argv) {
 
     parseArguments(argc, argv);
 
-    for (unsigned int i = 0; i < targets.count; ++i) {
+    /*for (unsigned int i = 0; i < targets.count; ++i) {
         printf("%s - file:%d dir:%d occurrences:%u\n", targets.targets[i].path, targets.targets[i].isFile,
                targets.targets[i].isDir, targets.targets[i].occurrences);
     }
-    printf("\n");
+    printf("\n");*/
 
     grep();
 

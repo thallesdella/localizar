@@ -74,7 +74,10 @@ void scanDir(Targets *target, dString path) {
         if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
             continue;
         }
-        addTarget(target, dir->d_name);
+
+        strcat(path, "/");
+        strcat(path, dir->d_name);
+        addTarget(target, path);
     }
     closedir(targetDir);
 }

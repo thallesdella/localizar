@@ -36,7 +36,7 @@ int isFile(dString path) {
 }
 
 int isDir(dString path) {
-    printf("%s - exists:%d\n", path, fileExists(path));
+    //printf("%s - exists:%d\n", path, fileExists(path));
     Stat statBuf;
 
     if (stat(path, &statBuf) == 0) {
