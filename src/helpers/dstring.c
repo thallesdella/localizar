@@ -59,10 +59,9 @@ void applyFuncToStrings(dStringVector vector, unsigned int size, dString (*func)
     }
 }
 
-void rmSubstr(dString string, dString remove) {
+void removeSubstr(dString string, dString remove) {
     size_t length = strlen(remove);
     while ((string = strstr(string, remove))) {
-        printf("%s", string + length);
         memmove(string, string + length, 1 + strlen(string + length));
     }
 }
@@ -76,7 +75,6 @@ int countAppearances(dString string, dString token) {
         positionOfToken = positionOfToken + sizeOfToken;
     }
 
-    i = i + 1;
     return i;
 }
 
