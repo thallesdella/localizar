@@ -14,9 +14,9 @@
 #define FLAG_NUMB 3
 #define FLAG_OUT 4
 
-typedef int (*Vflags)(dString);
+typedef int (*VecFlagsFunc)(dString);
 
-void initFlags(Flags *structFlags, Option *arrStructOption, Vflags *func, int flagsCount);
+void initFlags(Flags *structFlags, Option *arrStructOption, VecFlagsFunc *func, int flagsCount);
 
 void displayFlagHelp(dString scriptName, int exitCode);
 

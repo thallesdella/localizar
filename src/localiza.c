@@ -88,7 +88,7 @@ void garbageCollector() {
 }
 
 int main(int argc, dStringVector argv) {
-    Vflags verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber, flagOutput};
+    VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber, flagOutput};
     options = malloc(sizeof(Option) * FLAGS_COUNT);
     initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
 
