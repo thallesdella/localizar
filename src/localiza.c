@@ -57,9 +57,16 @@ void grep(void) {
         if (targets.targets[i].isDir) {
             scanDir(&targets, getTargetPath(targets, i));
         } else if (targets.targets[i].isFile) {
-            dString pathCopy = initString(getTargetPath(targets, i));
-            printf("-- %s:\n", strToUpper(pathCopy));
-            freeString(pathCopy);
+
+            if (getFlagStatus(flags, FLAG_COUNT) == 0) {
+                if (i != 0) {
+                    printf("\n");
+                }
+
+                dString pathCopy = initString(getTargetPath(targets, i));
+                printf("-- %s:\n", strToUpper(pathCopy));
+                freeString(pathCopy);
+            }
 
             int result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
             if (result >= 0) {
@@ -67,9 +74,6 @@ void grep(void) {
                 targets.totalOccurrences = targets.totalOccurrences + result;
             }
 
-            if ((i + 1) < targets.count) {
-                printf("\n");
-            }
         } else {
             printf("%s:File or directory dont exist", getTargetPath(targets, i));
         }
@@ -88,7 +92,8 @@ void garbageCollector() {
 }
 
 int main(int argc, dStringVector argv) {
-    VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber, flagOutput};
+    VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber,
+                                             flagOutput, flagDebug};
     options = malloc(sizeof(Option) * FLAGS_COUNT);
     initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
 
@@ -100,7 +105,7 @@ int main(int argc, dStringVector argv) {
 
     grep();
 
-    if (getFlagStatus(flags, FLAG_COUNT)) {
+    if (getFlagStatus(flags, FLAG_COUNT) == 1) {
         displayFlagCount(targets);
     }
 

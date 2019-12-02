@@ -38,8 +38,10 @@ void displayFlagCount(Targets target) {
     printf("OCCURRENCES: \n");
 
     for (unsigned int i = 0; i < target.count; ++i) {
+        //if (target.targets[i].isFile){
         printf("\t%s:%u %s\n", target.targets[i].path, target.targets[i].occurrences,
                (target.targets[i].occurrences > 1 ? "founds" : "found"));
+        //}
     }
 
     if (target.count > 1) {
@@ -59,6 +61,13 @@ void checkFlagsExistence(Flags *flags, Option *option, int argc, dStringVector a
 
 int getFlagStatus(Flags flags, int id) {
     return flags.flags[id].status;
+}
+
+int flagDebug(dString str) {
+    if (strcmp(str, "--debug") == 0) {
+        return 1;
+    }
+    return 0;
 }
 
 int flagHelp(dString str) {

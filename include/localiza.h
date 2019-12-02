@@ -10,7 +10,7 @@
 #include "targets.h"
 #include "dstring.h"
 
-#define FLAGS_COUNT 5
+#define FLAGS_COUNT 6
 
 Option *options;
 Flags flags;

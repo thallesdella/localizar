@@ -18,6 +18,8 @@ void addTarget(Targets *target, dString targetPath);
 
 dString getTargetPath(Targets target, unsigned int id);
 
+int countSearchTermOccurrence(SearchTerm needle, dString haystack, Flags flags);
+
 int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags);
 
 #endif //LOCALIZA_TARGETS_H

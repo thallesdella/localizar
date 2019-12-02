@@ -21,7 +21,7 @@ int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     }
 
     dString buf = initString("");
-    int occurrences = 0;
+    int occurrences = 0, count;
     long int size = 0, oldPosition = 0;
     long int newPosition = newLinePosition(targetFile, ftell(targetFile));
 
@@ -34,10 +34,11 @@ int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
         fgetc(targetFile);
         newPosition = newLinePosition(targetFile, oldPosition);
 
-        if (verifySearchTermPresence(needle, buf, flags)) {
-            occurrences = occurrences + 1;
 
-            if (!getFlagStatus(flags, FLAG_COUNT)) {
+        if ((count = countSearchTermOccurrence(needle, buf, flags)) > 0) {
+            occurrences = occurrences + count;
+
+            if (getFlagStatus(flags, FLAG_COUNT) == 0) {
                 if (getFlagStatus(flags, FLAG_NUMB)) {
                     printf("%s:%d:%s\n", targetPath, line, buf);
                 } else {
@@ -65,13 +66,15 @@ void scanDir(Targets *target, dString path) {
     }
 
     while ((dir = readdir(targetDir)) != NULL) {
+        dString buf = initString(path);
         if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
             continue;
         }
 
-        strcat(path, "/");
-        strcat(path, dir->d_name);
-        addTarget(target, path);
+        strcat(buf, "/");
+        strcat(buf, dir->d_name);
+        addTarget(target, buf);
+        freeString(buf);
     }
     closedir(targetDir);
 }
@@ -86,14 +89,23 @@ void addTarget(Targets *target, dString targetPath) {
 
     target->count = target->count + 1;
 
+    //printf("addTarget - %s\n", targetPath);
+
+    //bug
     if (target->count > 1) {
         target->targets = realloc(target->targets, sizeof(Target) * target->count);
     }
+
+    printf("addTarget - %s\n", targetPath);
 
     target->targets[id].occurrences = 0;
     target->targets[id].isFile = isFile(targetPath);
     target->targets[id].isDir = isDir(targetPath);
     target->targets[id].path = initString(targetPath);
+
+    printf("[ADD_TARGET] %s - isFile:%d isDir:%d occurrences:%d\n", target->targets[id].path,
+           target->targets[id].isFile,
+           target->targets[id].isDir, target->targets[id].occurrences);
 }
 
 void generateOutputFile(dString name, dString content) {
@@ -105,8 +117,21 @@ dString getTargetPath(Targets target, unsigned int id) {
     return target.targets[id].path;
 }
 
+int countSearchTermOccurrence(SearchTerm needle, dString haystack, Flags flags) {
+    int count = 0;
+    dString buf = initString(haystack);
+
+    while (verifySearchTermPresence(needle, buf, flags)) {
+        count = count + 1;
+    }
+
+    freeString(buf);
+    return count;
+}
+
 int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags) {
     int testsPassed = 0;
+
     for (unsigned int i = 0; i < needle.count; ++i) {
         dString hasString = (!getFlagStatus(flags, FLAG_CASE)
                              ? strstr(strToLower(haystack), strToLower(needle.terms[i]))
@@ -114,6 +139,7 @@ int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags) {
 
         if (hasString != NULL) {
             testsPassed = testsPassed + 1;
+            strcpy(haystack, hasString + 1);
         }
     }
 
