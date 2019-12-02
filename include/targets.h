@@ -8,7 +8,7 @@
 #include "structs.h"
 #include "dstring.h"
 
-int searchInTarget(Flags flags, SearchTerm searchTerm, dString targetPath);
+int searchInTarget(SearchTerm needle, dString targetPath, Flags flags);
 
 void scanDir(Targets *target, dString path);
 
@@ -17,5 +17,7 @@ void initTargets(Targets *target);
 void addTarget(Targets *target, dString targetPath);
 
 dString getTargetPath(Targets target, unsigned int id);
+
+int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags);
 
 #endif //LOCALIZA_TARGETS_H

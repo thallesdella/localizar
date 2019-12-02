@@ -51,7 +51,7 @@ void parseArguments(int argc, dStringVector argv) {
 void grep(void) {
     targets.totalOccurrences = 0;
 
-    for (size_t i = 0; i < targets.count; ++i) {
+    for (unsigned int i = 0; i < targets.count; ++i) {
         targets.targets[i].occurrences = 0;
 
         if (targets.targets[i].isDir) {
@@ -61,7 +61,7 @@ void grep(void) {
             printf("-- %s:\n", strToUpper(pathCopy));
             freeString(pathCopy);
 
-            int result = searchInTarget(flags, searchTerm, getTargetPath(targets, i));
+            int result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
             if (result >= 0) {
                 targets.targets[i].occurrences = result;
                 targets.totalOccurrences = targets.totalOccurrences + result;
