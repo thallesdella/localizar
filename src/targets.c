@@ -66,15 +66,16 @@ void scanDir(Targets *target, dString path) {
     }
 
     while ((dir = readdir(targetDir)) != NULL) {
-        dString buf = initString(path);
+        dString buf = initString(NULL);
         if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
             continue;
         }
 
-        strcat(buf, "/");
-        strcat(buf, dir->d_name);
+        sprintf(buf, "%s/%s", path, dir->d_name);
+        //strcat(path, "/");
+        //strcat(path, dir->d_name);
         addTarget(target, buf);
-        freeString(buf);
+
     }
     closedir(targetDir);
 }
@@ -89,7 +90,7 @@ void addTarget(Targets *target, dString targetPath) {
 
     target->count = target->count + 1;
 
-    //printf("addTarget - %s\n", targetPath);
+    printf("addTarget - %s\n", targetPath);
 
     //bug
     if (target->count > 1) {
