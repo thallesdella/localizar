@@ -2,6 +2,7 @@
 // Created by THALLES on 18/11/2019.
 //
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "localiza.h"
 #include "targets.h"
@@ -50,17 +51,27 @@ void parseArguments(int argc, dStringVector argv) {
 void grep(void) {
     targets.totalOccurrences = 0;
 
-    for (size_t i = 0; i < targets.count; ++i) {
+    for (unsigned int i = 0; i < targets.count; ++i) {
         targets.targets[i].occurrences = 0;
 
         if (targets.targets[i].isDir) {
             scanDir(&targets, getTargetPath(targets, i));
-        } else {
-            int result = searchInTarget(flags, searchTerm, getTargetPath(targets, i));
+        } else if (targets.targets[i].isFile) {
+            dString pathCopy = initString(getTargetPath(targets, i));
+            printf("-- %s:\n", strToUpper(pathCopy));
+            freeString(pathCopy);
+
+            int result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
             if (result >= 0) {
                 targets.targets[i].occurrences = result;
                 targets.totalOccurrences = targets.totalOccurrences + result;
             }
+
+            if ((i + 1) < targets.count) {
+                printf("\n");
+            }
+        } else {
+            printf("%s:File or directory dont exist", getTargetPath(targets, i));
         }
     }
 }
@@ -77,7 +88,7 @@ void garbageCollector() {
 }
 
 int main(int argc, dStringVector argv) {
-    Vflags verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber, flagOutput};
+    VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber, flagOutput};
     options = malloc(sizeof(Option) * FLAGS_COUNT);
     initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
 

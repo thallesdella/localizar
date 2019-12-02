@@ -26,6 +26,8 @@ dString strToUpper(dString string);
 
 void applyFuncToStrings(dStringVector vector, unsigned int size, dString (*func)(dString));
 
+void removeSubstr(dString string, dString remove);
+
 int countAppearances(dString string, dString token);
 
 void explode(dString string, dString delimiter, dStringVector result);

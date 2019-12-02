@@ -59,6 +59,13 @@ void applyFuncToStrings(dStringVector vector, unsigned int size, dString (*func)
     }
 }
 
+void removeSubstr(dString string, dString remove) {
+    size_t length = strlen(remove);
+    while ((string = strstr(string, remove))) {
+        memmove(string, string + length, 1 + strlen(string + length));
+    }
+}
+
 int countAppearances(dString string, dString token) {
     unsigned int sizeOfToken = strlen(token);
     dString positionOfToken = string;
@@ -68,7 +75,6 @@ int countAppearances(dString string, dString token) {
         positionOfToken = positionOfToken + sizeOfToken;
     }
 
-    i = i + 1;
     return i;
 }
 
@@ -92,19 +98,3 @@ void implode(dStringVector vector, unsigned int size, dString glue, dString resu
         }
     }
 }
-
-/*
-int main(int argc, dStringVector argv){
-    int size = countOccurrences(argv[1], argv[2]);
-    dStringVector result = initStringVector(size);
-
-    explode(argv[1], argv[2], result);
-
-    for (int i = 0; i < size; ++i) {
-        printf("%d:%s\n", i, result[i]);
-        free(result[i]);
-    }
-
-    free(result);
-}
-*/

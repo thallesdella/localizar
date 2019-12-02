@@ -12,7 +12,7 @@ void initSearchTerm(SearchTerm *searchTerm) {
 }
 
 void addSearchTerm(SearchTerm *searchTerm, dString term) {
-    searchTerm->count = countAppearances(term, "*");
+    searchTerm->count = countAppearances(term, "*") + 1;
 
     if (searchTerm->count > 1) {
         explode(term, "*", searchTerm->terms);
