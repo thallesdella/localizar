@@ -8,13 +8,20 @@
 #include "dstring.h"
 
 dString initString(dString content) {
-    dString buf = malloc(sizeof(char) * (strlen(content) + 1));
-    strcpy(buf, content);
+    if (content == NULL) {
+        dString buf = malloc(sizeof(char));
+        return buf;
+    }
+
+    size_t len = strlen(content) + 1;
+    dString buf = malloc(sizeof(char) * len);
+    memcpy(buf, content, len);
     return buf;
 }
 
 void alterString(dString string, dString content) {
-    string = realloc(string, sizeof(char) * (strlen(content) + 1));
+    size_t len = strlen(content) + 1;
+    string = realloc(string, sizeof(char) * len);
     strcpy(string, content);
 }
 
@@ -23,7 +30,13 @@ void freeString(dString string) {
 }
 
 dStringVector initStringVector(unsigned int size) {
-    return malloc(sizeof(dString) * size);
+    dStringVector buf = malloc(sizeof(dString) * size);
+
+    for (unsigned int i = 0; i < size; ++i) {
+        buf[i] = initString(NULL);
+    }
+
+    return buf;
 }
 
 void copyStringVector(dStringVector vector, unsigned int size, dStringVector content) {
