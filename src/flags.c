@@ -9,7 +9,7 @@
 #include "structs.h"
 #include "dstring.h"
 
-void initFlags(Flags *structFlags, Option *arrStructOption, Vflags *func, int flagsCount) {
+void initFlags(Flags *structFlags, Option *arrStructOption, VecFlagsFunc *func, int flagsCount) {
     for (int i = 0; i < flagsCount; ++i) {
         arrStructOption[i].status = 0;
         arrStructOption[i].verify = func[i];
