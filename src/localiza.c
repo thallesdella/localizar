@@ -57,7 +57,6 @@ void grep(void) {
         if (targets.targets[i].isDir) {
             scanDir(&targets, getTargetPath(targets, i));
         } else if (targets.targets[i].isFile) {
-
             if (getFlagStatus(flags, FLAG_COUNT) == 0) {
                 if (i != 0) {
                     printf("\n");
@@ -73,9 +72,8 @@ void grep(void) {
                 targets.targets[i].occurrences = result;
                 targets.totalOccurrences = targets.totalOccurrences + result;
             }
-
         } else {
-            printf("%s:File or directory dont exist", getTargetPath(targets, i));
+            printf("%s:File or directory dont exist\n", getTargetPath(targets, i));
         }
     }
 }

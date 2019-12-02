@@ -38,10 +38,10 @@ void displayFlagCount(Targets target) {
     printf("OCCURRENCES: \n");
 
     for (unsigned int i = 0; i < target.count; ++i) {
-        //if (target.targets[i].isFile){
-        printf("\t%s:%u %s\n", target.targets[i].path, target.targets[i].occurrences,
-               (target.targets[i].occurrences > 1 ? "founds" : "found"));
-        //}
+        if (target.targets[i].isFile) {
+            printf("\t%s:%u %s\n", target.targets[i].path, target.targets[i].occurrences,
+                   (target.targets[i].occurrences > 1 ? "founds" : "found"));
+        }
     }
 
     if (target.count > 1) {
