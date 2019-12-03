@@ -21,8 +21,6 @@ dString initString(dString content) {
 
 void alterString(dString string, dString content) {
     size_t len = strlen(content) + 1;
-
-    //Realloc if new size is lower?
     string = realloc(string, sizeof(char) * len);
     memcpy(string, content, len);
 }

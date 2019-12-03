@@ -20,7 +20,7 @@ int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
         return -1;
     }
 
-    dString buf = initString("");
+    dString buf = initString(NULL);
     int occurrences = 0, count;
     long int size = 0, oldPosition = 0;
     long int newPosition = newLinePosition(targetFile, ftell(targetFile));
@@ -47,7 +47,9 @@ int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
             }
 
             if (getFlagStatus(flags, FLAG_OUT)) {
-
+                dString cleanStr = initString(buf);
+                removeSearchTermFromLine(cleanStr, needle);
+                generateOutputFile(targetPath, cleanStr);
             }
         }
     }
@@ -66,17 +68,14 @@ void scanDir(Targets *target, dString path) {
     }
 
     while ((dir = readdir(targetDir)) != NULL) {
-        //size_t len = strlen(path) + strlen(dir->d_name) + 2;
-        //dString buf = malloc(sizeof(char) * len);
-        //sprintf(buf, "%s/%s", path, dir->d_name);
-        dString buf = initString(path);
-
         if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
             continue;
         }
 
+        dString buf = initString(path);
         concatStr(buf, "/");
         concatStr(buf, dir->d_name);
+
         addTarget(target, buf);
         freeString(buf);
     }
@@ -109,12 +108,42 @@ void addTarget(Targets *target, dString targetPath) {
 }
 
 void generateOutputFile(dString name, dString content) {
-    int rand = randInt();
-    FILE *targetFile = fopen(name, "w+");
+    dString buf = initString(name);
+    generateName(buf);
 
+    FILE *targetFile = fopen(buf, "a");
 
+    if (targetFile == NULL) {
+        printf("%s: Unable to open file.\n", buf);
+        return;
+    }
 
+    fputs(content, targetFile);
     fclose(targetFile);
+    freeString(buf);
+}
+
+void generateName(dString baseName) {
+    dString buf = initString(baseName);
+    int count = countAppearances(buf, ".");
+
+    if (count == 0) {
+        concatStr(baseName, "_");
+        concatStr(baseName, "%RAND%");
+    }
+
+    dStringVector bufVec = initStringVector(count);
+
+    explode(buf, ".", bufVec);
+
+    concatStr(bufVec[count - 1], "_");
+    concatStr(bufVec[count - 1], "%RAND%");
+
+    implode(bufVec, count, ".", buf);
+    alterString(baseName, buf);
+
+    freeStringVector(bufVec, count);
+    freeString(buf);
 }
 
 dString getTargetPath(Targets target, unsigned int id) {
