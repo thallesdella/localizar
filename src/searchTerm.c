@@ -2,6 +2,7 @@
 // Created by Thalles on 21/11/2019.
 //
 
+#include <stdio.h>
 #include "searchTerm.h"
 #include "structs.h"
 #include "dstring.h"
@@ -19,6 +20,12 @@ void addSearchTerm(SearchTerm *searchTerm, dString term) {
     } else {
         searchTerm->count = 1;
         searchTerm->terms[0] = initString(term);
+    }
+
+    if (superGlobal.isDebug()) {
+        for (int i = 0; i < searchTerm->count; ++i) {
+            printf("[ADD_SEARCH_TERM] %s\n", searchTerm->terms[i]);
+        }
     }
 }
 
