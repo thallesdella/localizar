@@ -11,6 +11,10 @@
 #include "structs.h"
 #include "dstring.h"
 
+int isDebug() {
+    return getFlagStatus(flags, FLAG_DEBUG);
+}
+
 void getFlagsFromArg(int argc, dStringVector argv) {
     for (unsigned int i = 0; i < flags.count; ++i) {
         checkFlagsExistence(&flags, &flags.flags[i], argc, argv);
@@ -90,6 +94,8 @@ void garbageCollector() {
 }
 
 int main(int argc, dStringVector argv) {
+    superGlobal.isDebug = isDebug;
+
     VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber,
                                              flagOutput, flagDebug};
     options = malloc(sizeof(Option) * FLAGS_COUNT);
