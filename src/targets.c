@@ -102,9 +102,11 @@ void addTarget(Targets *target, dString targetPath) {
     target->targets[id].path = initString(targetPath);
 
 
-    /*printf("[ADD_TARGET] %s - isFile:%d isDir:%d occurrences:%d\n", target->targets[id].path,
-           target->targets[id].isFile,
-           target->targets[id].isDir, target->targets[id].occurrences);*/
+    if (superGlobal.isDebug()) {
+        printf("[ADD_TARGET] %s - isFile:%d isDir:%d occurrences:%d\n", target->targets[id].path,
+               target->targets[id].isFile,
+               target->targets[id].isDir, target->targets[id].occurrences);
+    }
 }
 
 void generateOutputFile(dString name, dString content) {
