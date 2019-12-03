@@ -33,9 +33,14 @@ typedef struct Target {
 
 typedef struct Targets {
     unsigned int count;
-    unsigned int pathMaxLength;
     unsigned int totalOccurrences;
     Target *targets;
 } Targets;
+
+typedef struct SuperGlobal {
+    int (*isDebug)(void);
+} SuperGlobal;
+
+SuperGlobal superGlobal;
 
 #endif //LOCALIZA_STRUCTS_H
