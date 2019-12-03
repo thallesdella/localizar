@@ -127,15 +127,19 @@ void generateName(dString baseName) {
     dString buf = initString(baseName);
     int count = countAppearances(buf, ".");
 
+    dStringVector rand = initStringVector(2);
+    intToStr(rand[0], randInt());
+    intToStr(rand[1], randInt());
+
     if (count == 0) {
-        concatStr(baseName, 3, "_", "%RAND%", "%RAND%");
+        concatStr(baseName, 3, "_", rand[0], rand[1]);
         return;
     }
 
     dStringVector bufVec = initStringVector(count);
     explode(buf, ".", bufVec);
 
-    concatStr(bufVec[count - 1], 3, "_", "%RAND%", "%RAND%");
+    concatStr(baseName, 3, "_", rand[0], rand[1]);
 
     implode(bufVec, count, ".", buf);
     alterString(baseName, buf);
