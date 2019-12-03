@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include "targets.h"
 #include "flags.h"
+#include "searchTerm.h"
 #include "structs.h"
 #include "helpers.h"
 #include "dstring.h"
@@ -73,8 +74,7 @@ void scanDir(Targets *target, dString path) {
         }
 
         dString buf = initString(path);
-        concatStr(buf, "/");
-        concatStr(buf, dir->d_name);
+        concatStr(buf, 2, "/", dir->d_name);
 
         addTarget(target, buf);
         freeString(buf);
@@ -120,24 +120,22 @@ void generateOutputFile(dString name, dString content) {
 
     fputs(content, targetFile);
     fclose(targetFile);
-    freeString(buf);
 }
+
 
 void generateName(dString baseName) {
     dString buf = initString(baseName);
     int count = countAppearances(buf, ".");
 
     if (count == 0) {
-        concatStr(baseName, "_");
-        concatStr(baseName, "%RAND%");
+        concatStr(baseName, 3, "_", "%RAND%", "%RAND%");
+        return;
     }
 
     dStringVector bufVec = initStringVector(count);
-
     explode(buf, ".", bufVec);
 
-    concatStr(bufVec[count - 1], "_");
-    concatStr(bufVec[count - 1], "%RAND%");
+    concatStr(bufVec[count - 1], 3, "_", "%RAND%", "%RAND%");
 
     implode(bufVec, count, ".", buf);
     alterString(baseName, buf);
