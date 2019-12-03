@@ -100,6 +100,19 @@ void removeSubstr(dString string, dString remove) {
     }
 }
 
+void intToStr(dString string, int numb) {
+    dString buf = malloc(sizeof(int) * 8 + 1);
+    itoa(numb, buf, 10);
+
+    size_t bufLen = strlen(buf) + 1;
+    if (bufLen > (strlen(string) + 1)) {
+        string = realloc(string, bufLen + 1);
+    }
+
+    memcpy(string, buf, bufLen + 1);
+    freeString(buf);
+}
+
 int countAppearances(dString string, dString token) {
     unsigned int sizeOfToken = strlen(token);
     dString positionOfToken = string;

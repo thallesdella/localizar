@@ -30,6 +30,8 @@ void applyFuncToStrings(dStringVector vector, unsigned int size, dString (*func)
 
 void removeSubstr(dString string, dString remove);
 
+void intToStr(dString string, int numb);
+
 int countAppearances(dString string, dString token);
 
 void explode(dString string, dString delimiter, dStringVector result);
