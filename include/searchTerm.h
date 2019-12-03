@@ -12,6 +12,6 @@ void initSearchTerm(SearchTerm *searchTerm);
 
 void addSearchTerm(SearchTerm *searchTerm, dString term);
 
-int splitCount(dString term);
+void removeSearchTermFromLine(dString line, SearchTerm term);
 
 #endif //LOCALIZA_SEARCHTERM_H

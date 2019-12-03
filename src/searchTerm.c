@@ -21,3 +21,9 @@ void addSearchTerm(SearchTerm *searchTerm, dString term) {
         searchTerm->terms[0] = initString(term);
     }
 }
+
+void removeSearchTermFromLine(dString line, SearchTerm term) {
+    for (int i = 0; i < term.count; ++i) {
+        removeSubstr(line, term.terms[i]);
+    }
+}

@@ -16,7 +16,13 @@ void initTargets(Targets *target);
 
 void addTarget(Targets *target, dString targetPath);
 
+void generateOutputFile(dString name, dString content);
+
+void generateName(dString baseName);
+
 dString getTargetPath(Targets target, unsigned int id);
+
+int countSearchTermOccurrence(SearchTerm needle, dString haystack, Flags flags);
 
 int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags);
 

@@ -3,6 +3,8 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <sys/stat.h>
 #include "helpers.h"
 #include "dstring.h"
@@ -43,4 +45,9 @@ int isDir(dString path) {
         return S_ISDIR(statBuf.st_mode);
     }
     return 0;
+}
+
+int randInt() {
+    srand(time(0));
+    return rand();
 }

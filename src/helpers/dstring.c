@@ -4,18 +4,46 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <ctype.h>
 #include "dstring.h"
 
 dString initString(dString content) {
-    dString buf = malloc(sizeof(char) * (strlen(content) + 1));
-    strcpy(buf, content);
+    if (content == NULL) {
+        dString buf = malloc(sizeof(char));
+        return buf;
+    }
+
+    size_t len = strlen(content) + 1;
+    dString buf = malloc(sizeof(char) * len);
+    memcpy(buf, content, len);
     return buf;
 }
 
 void alterString(dString string, dString content) {
-    string = realloc(string, sizeof(char) * (strlen(content) + 1));
-    strcpy(string, content);
+    size_t oldLen = strlen(string) + 1, newLen = strlen(content) + 1;
+
+    if (newLen > oldLen || newLen <= (oldLen - 16)) {
+        string = realloc(string, sizeof(char) * newLen);
+    }
+
+    memcpy(string, content, newLen);
+}
+
+void concatStr(dString string, int numb, ...) {
+    va_list args;
+    size_t strLen = strlen(string);
+
+    va_start(args, numb);
+
+    for (int i = 0; i < numb; ++i) {
+        dString buf = initString(va_arg(args, dString));
+        string = realloc(string, sizeof(char) * (strlen(buf) + strLen + 1));
+        strcat(string, buf);
+        freeString(buf);
+    }
+
+    va_end(args);
 }
 
 void freeString(dString string) {
@@ -23,7 +51,13 @@ void freeString(dString string) {
 }
 
 dStringVector initStringVector(unsigned int size) {
-    return malloc(sizeof(dString) * size);
+    dStringVector buf = malloc(sizeof(dString) * size);
+
+    for (unsigned int i = 0; i < size; ++i) {
+        buf[i] = initString(NULL);
+    }
+
+    return buf;
 }
 
 void copyStringVector(dStringVector vector, unsigned int size, dStringVector content) {

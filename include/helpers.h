@@ -16,4 +16,6 @@ int isFile(dString path);
 
 int isDir(dString path);
 
+int randInt();
+
 #endif //LOCALIZA_HELPERS_H

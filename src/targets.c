@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include "targets.h"
 #include "flags.h"
+#include "searchTerm.h"
 #include "structs.h"
 #include "helpers.h"
 #include "dstring.h"
@@ -20,8 +21,8 @@ int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
         return -1;
     }
 
-    dString buf = initString("");
-    int occurrences = 0;
+    dString buf = initString(NULL);
+    int occurrences = 0, count;
     long int size = 0, oldPosition = 0;
     long int newPosition = newLinePosition(targetFile, ftell(targetFile));
 
@@ -34,10 +35,11 @@ int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
         fgetc(targetFile);
         newPosition = newLinePosition(targetFile, oldPosition);
 
-        if (verifySearchTermPresence(needle, buf, flags)) {
-            occurrences = occurrences + 1;
 
-            if (!getFlagStatus(flags, FLAG_COUNT)) {
+        if ((count = countSearchTermOccurrence(needle, buf, flags)) > 0) {
+            occurrences = occurrences + count;
+
+            if (getFlagStatus(flags, FLAG_COUNT) == 0) {
                 if (getFlagStatus(flags, FLAG_NUMB)) {
                     printf("%s:%d:%s\n", targetPath, line, buf);
                 } else {
@@ -46,7 +48,9 @@ int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
             }
 
             if (getFlagStatus(flags, FLAG_OUT)) {
-
+                dString cleanStr = initString(buf);
+                removeSearchTermFromLine(cleanStr, needle);
+                generateOutputFile(targetPath, cleanStr);
             }
         }
     }
@@ -69,9 +73,11 @@ void scanDir(Targets *target, dString path) {
             continue;
         }
 
-        strcat(path, "/");
-        strcat(path, dir->d_name);
-        addTarget(target, path);
+        dString buf = initString(path);
+        concatStr(buf, 2, "/", dir->d_name);
+
+        addTarget(target, buf);
+        freeString(buf);
     }
     closedir(targetDir);
 }
@@ -94,19 +100,69 @@ void addTarget(Targets *target, dString targetPath) {
     target->targets[id].isFile = isFile(targetPath);
     target->targets[id].isDir = isDir(targetPath);
     target->targets[id].path = initString(targetPath);
+
+
+    /*printf("[ADD_TARGET] %s - isFile:%d isDir:%d occurrences:%d\n", target->targets[id].path,
+           target->targets[id].isFile,
+           target->targets[id].isDir, target->targets[id].occurrences);*/
 }
 
 void generateOutputFile(dString name, dString content) {
-    FILE *targetFile = fopen(name, "a");
+    dString buf = initString(name);
+    generateName(buf);
+
+    FILE *targetFile = fopen(buf, "a");
+
+    if (targetFile == NULL) {
+        printf("%s: Unable to open file.\n", buf);
+        return;
+    }
+
+    fputs(content, targetFile);
     fclose(targetFile);
+}
+
+
+void generateName(dString baseName) {
+    dString buf = initString(baseName);
+    int count = countAppearances(buf, ".");
+
+    if (count == 0) {
+        concatStr(baseName, 3, "_", "%RAND%", "%RAND%");
+        return;
+    }
+
+    dStringVector bufVec = initStringVector(count);
+    explode(buf, ".", bufVec);
+
+    concatStr(bufVec[count - 1], 3, "_", "%RAND%", "%RAND%");
+
+    implode(bufVec, count, ".", buf);
+    alterString(baseName, buf);
+
+    freeStringVector(bufVec, count);
+    freeString(buf);
 }
 
 dString getTargetPath(Targets target, unsigned int id) {
     return target.targets[id].path;
 }
 
+int countSearchTermOccurrence(SearchTerm needle, dString haystack, Flags flags) {
+    int count = 0;
+    dString buf = initString(haystack);
+
+    while (verifySearchTermPresence(needle, buf, flags)) {
+        count = count + 1;
+    }
+
+    freeString(buf);
+    return count;
+}
+
 int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags) {
     int testsPassed = 0;
+
     for (unsigned int i = 0; i < needle.count; ++i) {
         dString hasString = (!getFlagStatus(flags, FLAG_CASE)
                              ? strstr(strToLower(haystack), strToLower(needle.terms[i]))
@@ -114,6 +170,7 @@ int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags) {
 
         if (hasString != NULL) {
             testsPassed = testsPassed + 1;
+            strcpy(haystack, hasString + 1);
         }
     }
 

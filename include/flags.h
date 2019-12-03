@@ -13,6 +13,7 @@
 #define FLAG_COUNT 2
 #define FLAG_NUMB 3
 #define FLAG_OUT 4
+#define FLAG_DEBUG 5
 
 typedef int (*VecFlagsFunc)(dString);
 
@@ -25,6 +26,8 @@ void displayFlagCount(Targets target);
 void checkFlagsExistence(Flags *flags, Option *option, int argc, dStringVector argv);
 
 int getFlagStatus(Flags flags, int id);
+
+int flagDebug(dString str);
 
 int flagHelp(dString str);
 
