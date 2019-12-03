@@ -20,9 +20,13 @@ dString initString(dString content) {
 }
 
 void alterString(dString string, dString content) {
-    size_t len = strlen(content) + 1;
-    string = realloc(string, sizeof(char) * len);
-    memcpy(string, content, len);
+    size_t oldLen = strlen(string) + 1, newLen = strlen(content) + 1;
+
+    if (newLen > oldLen || newLen <= (oldLen - 16)) {
+        string = realloc(string, sizeof(char) * newLen);
+    }
+
+    memcpy(string, content, newLen);
 }
 
 void concatStr(dString string, dString append) {
