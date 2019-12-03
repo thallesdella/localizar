@@ -4,6 +4,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <ctype.h>
 #include "dstring.h"
 
@@ -29,10 +30,20 @@ void alterString(dString string, dString content) {
     memcpy(string, content, newLen);
 }
 
-void concatStr(dString string, dString append) {
-    size_t strLen = strlen(string), appendLen = strlen(append);
-    string = realloc(string, sizeof(char) * (strLen + appendLen + 1));
-    strcat(string, append);
+void concatStr(dString string, int numb, ...) {
+    va_list args;
+    size_t strLen = strlen(string);
+
+    va_start(args, numb);
+
+    for (int i = 0; i < numb; ++i) {
+        dString buf = initString(va_arg(args, dString));
+        string = realloc(string, sizeof(char) * (strlen(buf) + strLen + 1));
+        strcat(string, buf);
+        freeString(buf);
+    }
+
+    va_end(args);
 }
 
 void freeString(dString string) {
