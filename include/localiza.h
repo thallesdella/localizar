@@ -17,6 +17,8 @@ Flags flags;
 SearchTerm searchTerm;
 Targets targets;
 
+int isDebug(void);
+
 void getFlagsFromArg(int argc, dStringVector argv);
 
 void getSearchTermFromArg(dStringVector argv);
