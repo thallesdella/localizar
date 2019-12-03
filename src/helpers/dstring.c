@@ -21,8 +21,16 @@ dString initString(dString content) {
 
 void alterString(dString string, dString content) {
     size_t len = strlen(content) + 1;
+
+    //Realloc if new size is lower?
     string = realloc(string, sizeof(char) * len);
-    strcpy(string, content);
+    memcpy(string, content, len);
+}
+
+void concatStr(dString string, dString append) {
+    size_t strLen = strlen(string), appendLen = strlen(append);
+    string = realloc(string, sizeof(char) * (strLen + appendLen + 1));
+    strcat(string, append);
 }
 
 void freeString(dString string) {

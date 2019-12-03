@@ -66,16 +66,19 @@ void scanDir(Targets *target, dString path) {
     }
 
     while ((dir = readdir(targetDir)) != NULL) {
-        dString buf = initString(NULL);
+        //size_t len = strlen(path) + strlen(dir->d_name) + 2;
+        //dString buf = malloc(sizeof(char) * len);
+        //sprintf(buf, "%s/%s", path, dir->d_name);
+        dString buf = initString(path);
+
         if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
             continue;
         }
 
-        sprintf(buf, "%s/%s", path, dir->d_name);
-        //strcat(path, "/");
-        //strcat(path, dir->d_name);
+        concatStr(buf, "/");
+        concatStr(buf, dir->d_name);
         addTarget(target, buf);
-
+        freeString(buf);
     }
     closedir(targetDir);
 }
@@ -90,27 +93,27 @@ void addTarget(Targets *target, dString targetPath) {
 
     target->count = target->count + 1;
 
-    printf("addTarget - %s\n", targetPath);
-
-    //bug
     if (target->count > 1) {
         target->targets = realloc(target->targets, sizeof(Target) * target->count);
     }
-
-    printf("addTarget - %s\n", targetPath);
 
     target->targets[id].occurrences = 0;
     target->targets[id].isFile = isFile(targetPath);
     target->targets[id].isDir = isDir(targetPath);
     target->targets[id].path = initString(targetPath);
 
-    printf("[ADD_TARGET] %s - isFile:%d isDir:%d occurrences:%d\n", target->targets[id].path,
+
+    /*printf("[ADD_TARGET] %s - isFile:%d isDir:%d occurrences:%d\n", target->targets[id].path,
            target->targets[id].isFile,
-           target->targets[id].isDir, target->targets[id].occurrences);
+           target->targets[id].isDir, target->targets[id].occurrences);*/
 }
 
 void generateOutputFile(dString name, dString content) {
-    FILE *targetFile = fopen(name, "a");
+    int rand = randInt();
+    FILE *targetFile = fopen(name, "w+");
+
+
+
     fclose(targetFile);
 }
 

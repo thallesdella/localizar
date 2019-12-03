@@ -12,6 +12,8 @@ dString initString(dString content);
 
 void alterString(dString string, dString content);
 
+void concatStr(dString string, dString append);
+
 void freeString(dString string);
 
 dStringVector initStringVector(unsigned int size);
