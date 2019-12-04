@@ -108,7 +108,7 @@ void removeSubstr(dString string, dString remove) {
 
 void intToStr(dString string, int numb) {
     dString buf = malloc(sizeof(int) * 8 + 1);
-    itoa(numb, buf, 10);
+    sprintf(buf, "%d", numb);
 
     size_t bufLen = strlen(buf) + 1;
     if (bufLen > (strlen(string) + 1)) {
