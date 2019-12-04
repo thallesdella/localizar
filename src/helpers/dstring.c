@@ -37,17 +37,12 @@ void concatStr(dString string, int numb, ...) {
 
     va_start(args, numb);
 
-    printf("concatStr - str:%s\n", string);
-
     for (int i = 0; i < numb; ++i) {
         dString buf = initString(va_arg(args, dString));
-        printf("concatStr - str:%s buf:%s before realloc\n", string, buf);
         string = realloc(string, sizeof(char) * (strlen(buf) + strLen + 1));
-        printf("concatStr - str:%s buf:%s after realloc\n", string, buf);
         strcat(string, buf);
         freeString(buf);
     }
-    printf("concatStr - str:%s\n", string);
 
     va_end(args);
 }

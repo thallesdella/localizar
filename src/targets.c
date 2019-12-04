@@ -28,7 +28,7 @@
  */
 int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     FILE *targetFile = fopen(targetPath, "r");
-    static int r[3] = {};
+    int *r = malloc(sizeof(int) * 3);
 
     if (targetFile == NULL) {
         printf("%s:File not found", targetPath);
@@ -71,6 +71,7 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     }
     freeString(buf);
     fclose(targetFile);
+    printf("err:%d hl:%d oc:%d\n", r[0], r[1], r[2]);
     return r;
 }
 
