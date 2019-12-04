@@ -10,6 +10,7 @@
 #include "searchTerm.h"
 #include "structs.h"
 #include "dstring.h"
+#include "helpers.h"
 
 int isDebug() {
     return getFlagStatus(flags, FLAG_DEBUG);
@@ -102,29 +103,29 @@ void garbageCollector() {
 
 int main(int argc, dStringVector argv) {
     superGlobal.isDebug = isDebug;
-
-    if (superGlobal.isDebug()) {
-        printf(" -- Debug Mode On-- \n");
-    }
+    printDebugMsg(" -- Debug Mode On -- ");
 
     VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber,
                                              flagOutput, flagDebug};
-
     options = malloc(sizeof(Option) * FLAGS_COUNT);
+
     initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
-
     initSearchTerm(&searchTerm);
-
     initTargets(&targets);
+    printDebugMsg("[MAIN] Finish Init");
 
     parseArguments(argc, argv);
+    printDebugMsg("[MAIN] Finish argument parse");
 
     grep();
 
     if (getFlagStatus(flags, FLAG_COUNT) == 1) {
         displayFlagCount(targets);
     }
+    printDebugMsg("[MAIN] Finish grep");
 
     garbageCollector();
+    printDebugMsg("[MAIN] Cleaning the dirt");
+
     return 0;
 }

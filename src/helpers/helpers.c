@@ -55,6 +55,6 @@ int randInt() {
 
 void printDebugMsg(dString msg) {
     if (superGlobal.isDebug()) {
-        printf("%s", msg);
+        printf("%s\n", msg);
     }
 }
