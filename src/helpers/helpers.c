@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include "helpers.h"
 #include "dstring.h"
+#include "structs.h"
 
 int newLinePosition(FILE *stream, long int start) {
     int c = 0, i = 0;
@@ -50,4 +51,10 @@ int isDir(dString path) {
 int randInt() {
     srand(time(0));
     return rand();
+}
+
+void printDebugMsg(dString msg) {
+    if (superGlobal.isDebug()) {
+        printf("%s", msg);
+    }
 }
