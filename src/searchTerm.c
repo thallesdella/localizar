@@ -22,7 +22,7 @@ void addSearchTerm(SearchTerm *searchTerm, dString term) {
         searchTerm->terms[0] = initString(term);
     }
 
-    if (superGlobal.isDebug()) {
+    if (superGlobal.isDebug == 1) {
         for (int i = 0; i < searchTerm->count; ++i) {
             printf("[ADD_SEARCH_TERM] %s\n", searchTerm->terms[i]);
         }

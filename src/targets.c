@@ -123,7 +123,7 @@ void addTarget(Targets *target, dString targetPath) {
     target->targets[id].path = initString(targetPath);
 
 
-    if (superGlobal.isDebug()) {
+    if (superGlobal.isDebug == 1) {
         printf("[ADD_TARGET] %s - isFile:%d isDir:%d occurrences:%d\n", target->targets[id].path,
                target->targets[id].isFile,
                target->targets[id].isDir, target->targets[id].occurrences);

@@ -40,7 +40,8 @@ typedef struct Targets {
 } Targets;
 
 typedef struct SuperGlobal {
-    int (*isDebug)(void);
+    //int (*isDebug)(void);
+    int isDebug;
 } SuperGlobal;
 
 SuperGlobal superGlobal;

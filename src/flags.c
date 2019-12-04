@@ -54,10 +54,11 @@ void checkFlagsExistence(Flags *flags, Option *option, int argc, dStringVector a
     for (int i = 1; i < argc; ++i) {
         if (option->verify(argv[i])) {
             option->status = 1;
+
             flags->active = flags->active + 1;
 
-            if (superGlobal.isDebug()) {
-                printf("[FLAGS] %s status:active", argv[i]);
+            if (superGlobal.isDebug == 1) {
+                printf("[FLAGS] %s status:active\n", argv[i]);
             }
             return;
         }
@@ -70,6 +71,7 @@ int getFlagStatus(Flags flags, int id) {
 
 int flagDebug(dString str) {
     if (strcmp(str, "--debug") == 0) {
+        superGlobal.isDebug = 1;
         return 1;
     }
     return 0;

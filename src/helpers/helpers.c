@@ -39,7 +39,6 @@ int isFile(dString path) {
 }
 
 int isDir(dString path) {
-    //printf("%s - exists:%d\n", path, fileExists(path));
     Stat statBuf;
 
     if (stat(path, &statBuf) == 0) {
@@ -54,7 +53,7 @@ int randInt() {
 }
 
 void printDebugMsg(dString msg) {
-    if (superGlobal.isDebug()) {
+    if (superGlobal.isDebug == 1) {
         printf("%s\n", msg);
     }
 }

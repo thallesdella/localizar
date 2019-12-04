@@ -54,11 +54,7 @@ void parseArguments(int argc, dStringVector argv) {
 }
 
 void grep(void) {
-    //targets.totalOccurrences = 0;
-
     for (unsigned int i = 0; i < targets.count; ++i) {
-        //targets.targets[i].occurrences = 0;
-
         if (targets.targets[i].isDir) {
             scanDir(&targets, getTargetPath(targets, i));
         } else if (targets.targets[i].isFile) {
@@ -85,7 +81,9 @@ void grep(void) {
             }
             free(result);
         } else {
-            printMsgForFile(targets, i, "File or directory dont exists");
+            if (!getFlagStatus(flags, FLAG_COUNT)) {
+                printMsgForFile(targets, i, "File or directory dont exist");
+            }
         }
     }
 }
@@ -102,14 +100,14 @@ void garbageCollector() {
 }
 
 int main(int argc, dStringVector argv) {
-    superGlobal.isDebug = isDebug;
-    printDebugMsg(" -- Debug Mode On -- ");
-
+    superGlobal.isDebug = 0;
     VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber,
                                              flagOutput, flagDebug};
     options = malloc(sizeof(Option) * FLAGS_COUNT);
 
     initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
+    printDebugMsg(" -- Debug Mode On -- ");
+
     initSearchTerm(&searchTerm);
     initTargets(&targets);
     printDebugMsg("[MAIN] Finish Init");
