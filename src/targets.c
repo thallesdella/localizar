@@ -16,11 +16,11 @@
 /**
  * Function: searchInTarget
  * ----------------------------
- *   Returns the square of the largest of its two input values
+ *   Search for a needle in a target file.
  *
  *   @param needle      struct SearchTerm witch contains count of needles
  *                      and needles.
- *   @param targetPath  path to the file
+ *   @param targetPath  path to the file.
  *   @param flags       struct Flags witch contains the flags and properties.
  *
  *   @returns:  array of int that indicates error status, hotLines
@@ -28,10 +28,7 @@
  */
 int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     FILE *targetFile = fopen(targetPath, "r");
-    int *r = malloc(sizeof(int) * 3);
-    r[0] = 0;
-    r[1] = 0;
-    r[2] = 0;
+    static int r[3] = {};
 
     if (targetFile == NULL) {
         printf("%s:File not found", targetPath);
@@ -77,6 +74,14 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     return r;
 }
 
+/**
+ * Function: scanDir
+ * ----------------------------
+ *   Search crawl a directory for files and directories.
+ *
+ *   @param target  struct Targets witch contains targets information.
+ *   @param path    path to the directory.
+ */
 void scanDir(Targets *target, dString path) {
     DIR *targetDir = opendir(path);
     struct dirent *dir;
@@ -92,7 +97,9 @@ void scanDir(Targets *target, dString path) {
         }
 
         dString buf = initString(path);
+        printf(" -- scanDir - %s\n", buf);
         concatStr(buf, 2, "/", dir->d_name);
+        printf("scanDir - %s -- \n", buf);
 
         addTarget(target, buf);
         freeString(buf);
@@ -100,36 +107,60 @@ void scanDir(Targets *target, dString path) {
     closedir(targetDir);
 }
 
-void initTargets(Targets *target) {
-    target->count = 0;
-    target->totalHotLines = 0;
-    target->totalOccurrences = 0;
-    target->targets = malloc(sizeof(Target));
+/**
+ * Function: initTargets
+ * ----------------------------
+ *   Initiate targets struct.
+ *
+ *   @param target  struct Targets witch contains targets information.
+ */
+void initTargets(Targets *targets) {
+    targets->count = 0;
+    targets->totalHotLines = 0;
+    targets->totalOccurrences = 0;
+    targets->targets = malloc(sizeof(Target));
 }
 
-void addTarget(Targets *target, dString targetPath) {
-    unsigned int id = target->count;
+/**
+ * Function: addTarget
+ * ----------------------------
+ *   Update de struct targets and add a new target to the struct.
+ *
+ *   @param target      struct Targets witch contains targets information.
+ *   @param targetPath  path to the file.
+ */
+void addTarget(Targets *targets, dString targetPath) {
+    unsigned int id = targets->count;
 
-    target->count = target->count + 1;
+    targets->count = targets->count + 1;
 
-    if (target->count > 1) {
-        target->targets = realloc(target->targets, sizeof(Target) * target->count);
+    if (targets->count > 1) {
+        targets->targets = realloc(targets->targets, sizeof(Target) * targets->count);
     }
 
-    target->targets[id].occurrences = 0;
-    target->targets[id].hotLines = 0;
-    target->targets[id].isFile = isFile(targetPath);
-    target->targets[id].isDir = isDir(targetPath);
-    target->targets[id].path = initString(targetPath);
+    Target *target = &targets->targets[id];
+    target->occurrences = 0;
+    target->hotLines = 0;
+    target->isFile = isFile(targetPath);
+    target->isDir = isDir(targetPath);
+    target->path = initString(targetPath);
 
 
     if (superGlobal.isDebug == 1) {
-        printf("[ADD_TARGET] %s - isFile:%d isDir:%d occurrences:%d\n", target->targets[id].path,
-               target->targets[id].isFile,
-               target->targets[id].isDir, target->targets[id].occurrences);
+        printf("[ADD_TARGET] %s - isFile:%d isDir:%d hotLines:%d occurrences:%d\n",
+               target->path, target->isFile, target->isDir, target->hotLines,
+               target->occurrences);
     }
 }
 
+/**
+ * Function: generateOutputFile
+ * ----------------------------
+ *   Generate an output file.
+ *
+ *   @param name    name of the file to generate.
+ *   @param content content to append to file.
+ */
 void generateOutputFile(dString name, dString content) {
     dString buf = initString(name);
     generateName(buf);
@@ -145,7 +176,14 @@ void generateOutputFile(dString name, dString content) {
     fclose(targetFile);
 }
 
-
+/**
+ * Function: generateName
+ * ----------------------------
+ *   Generate a new name adding random number to the end of the
+ *   files's name.
+ *
+ *   @param baseName name to be altered.
+ */
 void generateName(dString baseName) {
     dString buf = initString(baseName);
     int count = countAppearances(buf, ".");
@@ -171,14 +209,45 @@ void generateName(dString baseName) {
     freeString(buf);
 }
 
+/**
+ * Function: printMsgForFile
+ * ----------------------------
+ *   print a message for a specific file.
+ *
+ *   @param target  struct Targets witch contains targets information.
+ *   @param id      position of target in array.
+ *   @param message message to display.
+ */
 void printMsgForFile(Targets target, unsigned int id, dString message) {
     printf("%s:%s\n", getTargetPath(target, id), message);
 }
 
+/**
+ * Function: getTargetPath
+ * ----------------------------
+ *   Get the path for target's file.
+ *
+ *   @param target  struct Targets witch contains targets information.
+ *   @param id      position of target in array.
+ *
+ *   @return return the target's file path.
+ */
 dString getTargetPath(Targets target, unsigned int id) {
     return target.targets[id].path;
 }
 
+/**
+ * Function: countSearchTermOccurrence
+ * ----------------------------
+ *   loop throw an array of needles to count their occurrences in a sentence.
+ *
+ *   @param needle      struct SearchTerm witch contains count of needles
+ *                      and needles.
+ *   @param haystack    sentence to be verified.
+ *   @param flags       struct Flags witch contains the flags and properties.
+ *
+ *   @return will return the count of occurrences.
+ */
 int countSearchTermOccurrence(SearchTerm needle, dString haystack, Flags flags) {
     int count = 0;
     dString buf = initString(haystack);
@@ -191,6 +260,18 @@ int countSearchTermOccurrence(SearchTerm needle, dString haystack, Flags flags) 
     return count;
 }
 
+/**
+ * Function: verifySearchTermPresence
+ * ----------------------------
+ *   loop throw an array of needles to verify their presence in a sentence.
+ *
+ *   @param needle      struct SearchTerm witch contains count of needles
+ *                      and needles.
+ *   @param haystack    sentence to be verified.
+ *   @param flags       struct Flags witch contains the flags and properties.
+ *
+ *   @return return 1 if the needles are present otherwise 0.
+ */
 int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags) {
     int testsPassed = 0;
 
