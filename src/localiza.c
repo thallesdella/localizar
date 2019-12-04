@@ -79,7 +79,6 @@ void grep(void) {
                 targets.totalHotLines = targets.totalHotLines + result[1];
                 targets.totalOccurrences = targets.totalOccurrences + result[2];
             }
-            free(result);
         } else {
             if (!getFlagStatus(flags, FLAG_COUNT)) {
                 printMsgForFile(targets, i, "File or directory dont exist");
