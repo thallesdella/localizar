@@ -27,15 +27,23 @@ typedef struct SearchTerm {
 typedef struct Target {
     int isFile;
     int isDir;
+    unsigned int hotLines;
     unsigned int occurrences;
     dString path;
 } Target;
 
 typedef struct Targets {
     unsigned int count;
-    unsigned int pathMaxLength;
+    unsigned int totalHotLines;
     unsigned int totalOccurrences;
     Target *targets;
 } Targets;
+
+typedef struct SuperGlobal {
+    //int (*isDebug)(void);
+    int isDebug;
+} SuperGlobal;
+
+SuperGlobal superGlobal;
 
 #endif //LOCALIZA_STRUCTS_H

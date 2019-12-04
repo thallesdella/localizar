@@ -3,6 +3,7 @@
 //
 
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <ctype.h>
@@ -36,12 +37,17 @@ void concatStr(dString string, int numb, ...) {
 
     va_start(args, numb);
 
+    printf("concatStr - str:%s\n", string);
+
     for (int i = 0; i < numb; ++i) {
         dString buf = initString(va_arg(args, dString));
+        printf("concatStr - str:%s buf:%s before realloc\n", string, buf);
         string = realloc(string, sizeof(char) * (strlen(buf) + strLen + 1));
+        printf("concatStr - str:%s buf:%s after realloc\n", string, buf);
         strcat(string, buf);
         freeString(buf);
     }
+    printf("concatStr - str:%s\n", string);
 
     va_end(args);
 }
@@ -98,6 +104,19 @@ void removeSubstr(dString string, dString remove) {
     while ((string = strstr(string, remove))) {
         memmove(string, string + length, 1 + strlen(string + length));
     }
+}
+
+void intToStr(dString string, int numb) {
+    dString buf = malloc(sizeof(int) * 8 + 1);
+    itoa(numb, buf, 10);
+
+    size_t bufLen = strlen(buf) + 1;
+    if (bufLen > (strlen(string) + 1)) {
+        string = realloc(string, bufLen + 1);
+    }
+
+    memcpy(string, buf, bufLen + 1);
+    freeString(buf);
 }
 
 int countAppearances(dString string, dString token) {

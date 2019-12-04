@@ -18,4 +18,6 @@ int isDir(dString path);
 
 int randInt();
 
+void printDebugMsg(dString msg);
+
 #endif //LOCALIZA_HELPERS_H

@@ -10,6 +10,11 @@
 #include "searchTerm.h"
 #include "structs.h"
 #include "dstring.h"
+#include "helpers.h"
+
+int isDebug() {
+    return getFlagStatus(flags, FLAG_DEBUG);
+}
 
 void getFlagsFromArg(int argc, dStringVector argv) {
     for (unsigned int i = 0; i < flags.count; ++i) {
@@ -49,11 +54,7 @@ void parseArguments(int argc, dStringVector argv) {
 }
 
 void grep(void) {
-    targets.totalOccurrences = 0;
-
     for (unsigned int i = 0; i < targets.count; ++i) {
-        targets.targets[i].occurrences = 0;
-
         if (targets.targets[i].isDir) {
             scanDir(&targets, getTargetPath(targets, i));
         } else if (targets.targets[i].isFile) {
@@ -67,13 +68,21 @@ void grep(void) {
                 freeString(pathCopy);
             }
 
-            int result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
-            if (result >= 0) {
-                targets.targets[i].occurrences = result;
-                targets.totalOccurrences = targets.totalOccurrences + result;
+            int *result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
+            if (result[0] == 0) {
+                if (result[1] == 0) {
+                    printMsgForFile(targets, i, "Didnt find any occurrences");
+                }
+
+                targets.targets[i].hotLines = result[1];
+                targets.targets[i].occurrences = result[2];
+                targets.totalHotLines = targets.totalHotLines + result[1];
+                targets.totalOccurrences = targets.totalOccurrences + result[2];
             }
         } else {
-            printf("%s:File or directory dont exist\n", getTargetPath(targets, i));
+            if (!getFlagStatus(flags, FLAG_COUNT)) {
+                printMsgForFile(targets, i, "File or directory dont exist");
+            }
         }
     }
 }
@@ -90,23 +99,30 @@ void garbageCollector() {
 }
 
 int main(int argc, dStringVector argv) {
+    superGlobal.isDebug = 0;
     VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber,
                                              flagOutput, flagDebug};
     options = malloc(sizeof(Option) * FLAGS_COUNT);
+
     initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
+    printDebugMsg(" -- Debug Mode On -- ");
 
     initSearchTerm(&searchTerm);
-
     initTargets(&targets);
+    printDebugMsg("[MAIN] Finish Init");
 
     parseArguments(argc, argv);
+    printDebugMsg("[MAIN] Finish argument parse");
 
     grep();
 
     if (getFlagStatus(flags, FLAG_COUNT) == 1) {
         displayFlagCount(targets);
     }
+    printDebugMsg("[MAIN] Finish grep");
 
     garbageCollector();
+    printDebugMsg("[MAIN] Cleaning the dirt");
+
     return 0;
 }

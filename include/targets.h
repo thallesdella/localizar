@@ -8,7 +8,7 @@
 #include "structs.h"
 #include "dstring.h"
 
-int searchInTarget(SearchTerm needle, dString targetPath, Flags flags);
+int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags);
 
 void scanDir(Targets *target, dString path);
 
@@ -19,6 +19,8 @@ void addTarget(Targets *target, dString targetPath);
 void generateOutputFile(dString name, dString content);
 
 void generateName(dString baseName);
+
+void printMsgForFile(Targets target, unsigned int id, dString message);
 
 dString getTargetPath(Targets target, unsigned int id);
 
