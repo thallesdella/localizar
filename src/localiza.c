@@ -74,7 +74,7 @@ void grep(void) {
             int *result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
             if (result[0] == 0) {
                 if (result[1] == 0) {
-                    printf("%s:File or directory dont exists\n", getTargetPath(targets, i));
+                    printMsgForFile(targets, i, "Didnt find any occurrences");
                 }
 
                 targets.targets[i].hotLines = result[1];
@@ -84,7 +84,7 @@ void grep(void) {
             }
             free(result);
         } else {
-            printf("%s:File or directory dont exists\n", getTargetPath(targets, i));
+            printMsgForFile(targets, i, "File or directory dont exists");
         }
     }
 }
@@ -109,6 +109,7 @@ int main(int argc, dStringVector argv) {
 
     VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber,
                                              flagOutput, flagDebug};
+
     options = malloc(sizeof(Option) * FLAGS_COUNT);
     initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
 
