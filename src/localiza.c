@@ -53,10 +53,10 @@ void parseArguments(int argc, dStringVector argv) {
 }
 
 void grep(void) {
-    targets.totalOccurrences = 0;
+    //targets.totalOccurrences = 0;
 
     for (unsigned int i = 0; i < targets.count; ++i) {
-        targets.targets[i].occurrences = 0;
+        //targets.targets[i].occurrences = 0;
 
         if (targets.targets[i].isDir) {
             scanDir(&targets, getTargetPath(targets, i));
@@ -71,13 +71,16 @@ void grep(void) {
                 freeString(pathCopy);
             }
 
-            int result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
-            if (result >= 0) {
-                targets.targets[i].occurrences = result;
-                targets.totalOccurrences = targets.totalOccurrences + result;
+            int *result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
+            if (result[0] >= 0) {
+                targets.targets[i].hotLines = result[0];
+                targets.targets[i].occurrences = result[1];
+                targets.totalHotLines = targets.totalHotLines + result[0];
+                targets.totalOccurrences = targets.totalOccurrences + result[1];
             }
+            free(result);
         } else {
-            printf("%s:File or directory dont exist\n", getTargetPath(targets, i));
+            printf("%s:File or directory dont exists\n", getTargetPath(targets, i));
         }
     }
 }

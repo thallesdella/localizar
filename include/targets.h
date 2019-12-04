@@ -8,7 +8,7 @@
 #include "structs.h"
 #include "dstring.h"
 
-int searchInTarget(SearchTerm needle, dString targetPath, Flags flags);
+int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags);
 
 void scanDir(Targets *target, dString path);
 

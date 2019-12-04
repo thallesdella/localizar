@@ -13,7 +13,7 @@
 #include "helpers.h"
 #include "dstring.h"
 
-int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
+int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     FILE *targetFile = fopen(targetPath, "r");
 
     if (targetFile == NULL) {
@@ -22,7 +22,7 @@ int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     }
 
     dString buf = initString(NULL);
-    int occurrences = 0, count;
+    int count, *occurrences = malloc(sizeof(int) * 2);
     long int size = 0, oldPosition = 0;
     long int newPosition = newLinePosition(targetFile, ftell(targetFile));
 
@@ -35,9 +35,9 @@ int searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
         fgetc(targetFile);
         newPosition = newLinePosition(targetFile, oldPosition);
 
-
         if ((count = countSearchTermOccurrence(needle, buf, flags)) > 0) {
-            occurrences = occurrences + count;
+            occurrences[0] = occurrences[0] + 1;
+            occurrences[1] = occurrences[1] + count;
 
             if (getFlagStatus(flags, FLAG_COUNT) == 0) {
                 if (getFlagStatus(flags, FLAG_NUMB)) {
@@ -84,6 +84,8 @@ void scanDir(Targets *target, dString path) {
 
 void initTargets(Targets *target) {
     target->count = 0;
+    target->totalHotLines = 0;
+    target->totalOccurrences = 0;
     target->targets = malloc(sizeof(Target));
 }
 
@@ -97,6 +99,7 @@ void addTarget(Targets *target, dString targetPath) {
     }
 
     target->targets[id].occurrences = 0;
+    target->targets[id].hotLines = 0;
     target->targets[id].isFile = isFile(targetPath);
     target->targets[id].isDir = isDir(targetPath);
     target->targets[id].path = initString(targetPath);
