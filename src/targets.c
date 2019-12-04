@@ -13,16 +13,34 @@
 #include "helpers.h"
 #include "dstring.h"
 
+/**
+ * Function: searchInTarget
+ * ----------------------------
+ *   Returns the square of the largest of its two input values
+ *
+ *   @param needle      struct SearchTerm witch contains count of needles
+ *                      and needles.
+ *   @param targetPath  path to the file
+ *   @param flags       struct Flags witch contains the flags and properties.
+ *
+ *   @returns:  array of int that indicates error status, hotLines
+ *              and occurrences.
+ */
 int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     FILE *targetFile = fopen(targetPath, "r");
+    int *r = malloc(sizeof(int) * 3);
+    r[0] = 0;
+    r[1] = 0;
+    r[2] = 0;
 
     if (targetFile == NULL) {
         printf("%s:File not found", targetPath);
-        return -1;
+        r[1] = 1;
+        return r;
     }
 
     dString buf = initString(NULL);
-    int count, *occurrences = malloc(sizeof(int) * 2);
+    int count;
     long int size = 0, oldPosition = 0;
     long int newPosition = newLinePosition(targetFile, ftell(targetFile));
 
@@ -36,8 +54,8 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
         newPosition = newLinePosition(targetFile, oldPosition);
 
         if ((count = countSearchTermOccurrence(needle, buf, flags)) > 0) {
-            occurrences[0] = occurrences[0] + 1;
-            occurrences[1] = occurrences[1] + count;
+            r[1] = r[1] + 1;
+            r[2] = r[2] + count;
 
             if (getFlagStatus(flags, FLAG_COUNT) == 0) {
                 if (getFlagStatus(flags, FLAG_NUMB)) {
@@ -56,7 +74,7 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     }
     freeString(buf);
     fclose(targetFile);
-    return occurrences;
+    return r;
 }
 
 void scanDir(Targets *target, dString path) {

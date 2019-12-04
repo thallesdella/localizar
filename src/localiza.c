@@ -72,11 +72,11 @@ void grep(void) {
             }
 
             int *result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
-            if (result[0] >= 0) {
-                targets.targets[i].hotLines = result[0];
-                targets.targets[i].occurrences = result[1];
-                targets.totalHotLines = targets.totalHotLines + result[0];
-                targets.totalOccurrences = targets.totalOccurrences + result[1];
+            if (result[0] == 0) {
+                targets.targets[i].hotLines = result[1];
+                targets.targets[i].occurrences = result[2];
+                targets.totalHotLines = targets.totalHotLines + result[1];
+                targets.totalOccurrences = targets.totalOccurrences + result[2];
             }
             free(result);
         } else {
