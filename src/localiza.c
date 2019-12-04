@@ -96,6 +96,10 @@ void garbageCollector() {
 int main(int argc, dStringVector argv) {
     superGlobal.isDebug = isDebug;
 
+    if (superGlobal.isDebug()) {
+        printf(" -- Debug Mode On-- \n");
+    }
+
     VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagHelp, flagCaseSensitive, flagCount, flagLineNumber,
                                              flagOutput, flagDebug};
     options = malloc(sizeof(Option) * FLAGS_COUNT);
