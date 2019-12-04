@@ -20,6 +20,8 @@ void generateOutputFile(dString name, dString content);
 
 void generateName(dString baseName);
 
+void printMsgForFile(Targets target, unsigned int id, dString message);
+
 dString getTargetPath(Targets target, unsigned int id);
 
 int countSearchTermOccurrence(SearchTerm needle, dString haystack, Flags flags);

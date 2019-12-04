@@ -171,6 +171,10 @@ void generateName(dString baseName) {
     freeString(buf);
 }
 
+void printMsgForFile(Targets target, unsigned int id, dString message) {
+    printf("%s:%s\n", getTargetPath(target, id), message);
+}
+
 dString getTargetPath(Targets target, unsigned int id) {
     return target.targets[id].path;
 }
