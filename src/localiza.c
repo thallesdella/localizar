@@ -73,6 +73,10 @@ void grep(void) {
 
             int *result = searchInTarget(searchTerm, getTargetPath(targets, i), flags);
             if (result[0] == 0) {
+                if (result[1] == 0) {
+                    printf("%s:File or directory dont exists\n", getTargetPath(targets, i));
+                }
+
                 targets.targets[i].hotLines = result[1];
                 targets.targets[i].occurrences = result[2];
                 targets.totalHotLines = targets.totalHotLines + result[1];
