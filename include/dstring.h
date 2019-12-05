@@ -18,7 +18,8 @@ void freeString(dString string);
 
 dStringVector initStringVector(unsigned int size);
 
-void copyStringVector(dStringVector vector, unsigned int size, dStringVector content);
+void copyStringVector(dStringVector vector, unsigned int size,
+                      dStringVector content);
 
 void freeStringVector(dStringVector string, unsigned int size);
 
@@ -26,7 +27,8 @@ dString strToLower(dString string);
 
 dString strToUpper(dString string);
 
-void applyFuncToStrings(dStringVector vector, unsigned int size, dString (*func)(dString));
+void applyFuncToStrings(dStringVector vector, unsigned int size,
+                        dString (*func)(dString));
 
 void removeSubstr(dString string, dString remove);
 
@@ -36,6 +38,7 @@ int countAppearances(dString string, dString token);
 
 void explode(dString string, dString delimiter, dStringVector result);
 
-void implode(dStringVector vector, unsigned int size, dString glue, dString result);
+void implode(dStringVector vector, unsigned int size, dString glue,
+             dString result);
 
-#endif //LOCALIZA_DSTRING_H
+#endif // LOCALIZA_DSTRING_H
