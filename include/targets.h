@@ -7,6 +7,7 @@
 
 #include "dstring.h"
 #include "structs.h"
+#include <stdio.h>
 
 int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags);
 
@@ -23,6 +24,8 @@ void generateName(dString baseName);
 void printMsgForFile(Targets target, unsigned int id, dString message);
 
 dString getTargetPath(Targets target, unsigned int id);
+
+void readLine(FILE *file, dString line);
 
 int countSearchTermOccurrence(SearchTerm needle, dString haystack, Flags flags);
 

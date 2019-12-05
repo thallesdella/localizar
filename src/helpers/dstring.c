@@ -45,11 +45,11 @@ void alterString(dString string, dString content) {
     string = realloc(string, sizeof(char) * newLen);
   }
 
-  memcpy(string, content, newLen);
+  strcpy(string, content);
 }
 
 /**
- * Function: concatStr
+ * Function: concatStr *BUG
  * ----------------------------
  *   @brief concatenate numb strings to a string.
  *
