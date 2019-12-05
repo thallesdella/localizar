@@ -100,10 +100,13 @@ void scanDir(Targets *target, dString path) {
       continue;
     }
 
-    dString buf = initString(path);
+    dString buf =
+        malloc(sizeof(char) * (strlen(path) + strlen(dir->d_name) + 2));
+    sprintf(buf, "%s/%s", path, dir->d_name);
+    /*dString buf = initString(path);
     printf(" -- scanDir - %s\n", buf);
     concatStr(buf, 2, "/", dir->d_name);
-    printf("scanDir - %s -- \n", buf);
+    printf("scanDir - %s -- \n", buf);*/
 
     addTarget(target, buf);
     freeString(buf);
