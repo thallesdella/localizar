@@ -5,8 +5,8 @@
 #ifndef LOCALIZA_TARGETS_H
 #define LOCALIZA_TARGETS_H
 
-#include "structs.h"
 #include "dstring.h"
+#include "structs.h"
 
 int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags);
 
@@ -28,4 +28,4 @@ int countSearchTermOccurrence(SearchTerm needle, dString haystack, Flags flags);
 
 int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags);
 
-#endif //LOCALIZA_TARGETS_H
+#endif // LOCALIZA_TARGETS_H

@@ -5,13 +5,13 @@
 #ifndef LOCALIZA_SEARCHTERM_H
 #define LOCALIZA_SEARCHTERM_H
 
-#include "structs.h"
 #include "dstring.h"
+#include "structs.h"
 
 void initSearchTerm(SearchTerm *searchTerm);
 
 void addSearchTerm(SearchTerm *searchTerm, dString term);
 
-void removeSearchTermFromLine(dString line, SearchTerm term);
+void removeSearchTermFromString(dString string, SearchTerm searchTerm);
 
-#endif //LOCALIZA_SEARCHTERM_H
+#endif // LOCALIZA_SEARCHTERM_H

@@ -5,8 +5,8 @@
 #ifndef LOCALIZA_HELPERS_H
 #define LOCALIZA_HELPERS_H
 
-#include <stdio.h>
 #include "dstring.h"
+#include <stdio.h>
 
 typedef struct stat Stat;
 
@@ -20,4 +20,4 @@ int randInt();
 
 void printDebugMsg(dString msg);
 
-#endif //LOCALIZA_HELPERS_H
+#endif // LOCALIZA_HELPERS_H

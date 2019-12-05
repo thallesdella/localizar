@@ -46,4 +46,4 @@ typedef struct SuperGlobal {
 
 SuperGlobal superGlobal;
 
-#endif //LOCALIZA_STRUCTS_H
+#endif // LOCALIZA_STRUCTS_H
