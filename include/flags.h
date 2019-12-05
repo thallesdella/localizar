@@ -17,7 +17,7 @@
 
 typedef int (*VecFlagsFunc)(dString);
 
-void initFlags(Flags *structFlags, Option *arrStructOption, VecFlagsFunc *func,
+void initFlags(Flags *flags, Option *option, VecFlagsFunc *func,
                int flagsCount);
 
 void displayFlagHelp(dString scriptName, int exitCode);
@@ -29,16 +29,16 @@ void checkFlagsExistence(Flags *flags, Option *option, int argc,
 
 int getFlagStatus(Flags flags, int id);
 
-int flagDebug(dString str);
+int flagDebug(dString arg);
 
-int flagHelp(dString str);
+int flagHelp(dString arg);
 
-int flagCaseSensitive(dString str);
+int flagCaseSensitive(dString arg);
 
-int flagCount(dString str);
+int flagCount(dString arg);
 
-int flagLineNumber(dString str);
+int flagLineNumber(dString arg);
 
-int flagOutput(dString str);
+int flagOutput(dString arg);
 
 #endif // LOCALIZA_FLAGS_H

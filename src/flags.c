@@ -9,18 +9,37 @@
 #include <stdlib.h>
 #include <string.h>
 
-void initFlags(Flags *structFlags, Option *arrStructOption, VecFlagsFunc *func,
+/**
+ * Function: initString
+ * ----------------------------
+ *   @brief Initiate flags struct.
+ *
+ *   @param flags       struct Flags witch will contains information of all
+ *                      flags and others.
+ *   @param option      struct Options witch contains a flag information.
+ *   @param func        array of pointers to verify function.
+ *   @param flagsCount  count of flags.
+ */
+void initFlags(Flags *flags, Option *option, VecFlagsFunc *func,
                int flagsCount) {
   for (int i = 0; i < flagsCount; ++i) {
-    arrStructOption[i].status = 0;
-    arrStructOption[i].verify = func[i];
+    option[i].status = 0;
+    option[i].verify = func[i];
   }
 
-  structFlags->active = 0;
-  structFlags->count = flagsCount;
-  structFlags->flags = arrStructOption;
+  flags->active = 0;
+  flags->count = flagsCount;
+  flags->flags = option;
 }
 
+/**
+ * Function: displayFlagHelp
+ * ----------------------------
+ *   @brief Display help screen.
+ *
+ *   @param scriptName  nme of the running script.
+ *   @param exitCode    exit code number.
+ */
 void displayFlagHelp(dString scriptName, int exitCode) {
   printf("-- USAGE --\n");
   printf("\t./%s [null|flags...] [pattern] [file|dir...]\n", scriptName);
@@ -37,23 +56,40 @@ void displayFlagHelp(dString scriptName, int exitCode) {
   exit(exitCode);
 }
 
+/**
+ * Function: displayFlagCount
+ * ----------------------------
+ *   @brief Display number of lines with had an occurrence of the SearchTerm.
+ *
+ *   @param target struct Targets witch contains targets information.
+ */
 void displayFlagCount(Targets target) {
   printf("OCCURRENCES: \n");
 
   for (unsigned int i = 0; i < target.count; ++i) {
     if (target.targets[i].isFile) {
-      printf("\t%s:%u %s\n", target.targets[i].path,
-             target.targets[i].occurrences,
-             (target.targets[i].occurrences > 1 ? "founds" : "found"));
+      printf("\t%s:%u %s\n", target.targets[i].path, target.targets[i].hotLines,
+             (target.targets[i].hotLines > 1 ? "founds" : "found"));
     }
   }
 
   if (target.count > 1) {
-    printf("TOTAL:%u %s\n", target.totalOccurrences,
-           (target.totalOccurrences > 1 ? "founds" : "found"));
+    printf("TOTAL:%u %s\n", target.totalHotLines,
+           (target.totalHotLines > 1 ? "founds" : "found"));
   }
 }
 
+/**
+ * Function: checkFlagsExistence
+ * ----------------------------
+ *   @brief Verify is a certain flag exists in arguments passed.
+ *
+ *   @param flags   struct Flags witch contains information of all flags and
+ *                  others.
+ *   @param option  struct Options witch contains a flag information.
+ *   @param argc    argc arguments count.
+ *   @param argv    arguments array.
+ */
 void checkFlagsExistence(Flags *flags, Option *option, int argc,
                          dStringVector argv) {
   for (int i = 1; i < argc; ++i) {
@@ -70,53 +106,127 @@ void checkFlagsExistence(Flags *flags, Option *option, int argc,
   }
 }
 
+/**
+ * Function: getFlagStatus
+ * ----------------------------
+ *   @brief Get the flag status.
+ *
+ *   @param flags   struct Flags witch contains information of all flags and
+ *                  others.
+ *   @param id      position of flag in array.
+ *
+ *   @return return the target's file path.
+ */
 int getFlagStatus(Flags flags, int id) { return flags.flags[id].status; }
 
-int flagDebug(dString str) {
-  if (strcmp(str, "--debug") == 0) {
+/**
+ * Function: flagDebug
+ * ----------------------------
+ *   @brief Verification function for flag debug.
+ *
+ *   @param arg argument to be verified
+ *
+ *   @return return 1 for true or 0 for false.
+ */
+int flagDebug(dString arg) {
+  if (strcmp(arg, "--debug") == 0) {
     superGlobal.isDebug = 1;
     return 1;
   }
   return 0;
 }
 
-int flagHelp(dString str) {
-  if (strcmp(str, "-h") == 0 || strcmp(str, "--help") == 0) {
+/**
+ * Function: flagHelp
+ * ----------------------------
+ *   @brief Verification function for flag help.
+ *
+ *   @param arg argument to be verified
+ *
+ *   @return return 1 for true or 0 for false.
+ */
+int flagHelp(dString arg) {
+  if (strcmp(arg, "-h") == 0 || strcmp(arg, "--help") == 0) {
     return 1;
   }
   return 0;
 }
 
-int flagCaseSensitive(dString str) {
-  if (strcmp(str, "-i") == 0 || strcmp(str, "--case") == 0) {
+/**
+ * Function: flagCaseSensitive
+ * ----------------------------
+ *   @brief Verification function for flag case sensitive.
+ *
+ *   @param arg argument to be verified
+ *
+ *   @return return 1 for true or 0 for false.
+ */
+int flagCaseSensitive(dString arg) {
+  if (strcmp(arg, "-i") == 0 || strcmp(arg, "--case") == 0) {
     return 1;
   }
   return 0;
 }
 
-int flagCount(dString str) {
-  if (strcmp(str, "-c") == 0 || strcmp(str, "--count") == 0) {
+/**
+ * Function: flagCount
+ * ----------------------------
+ *   @brief Verification function for flag count lines that have occurrences.
+ *
+ *   @param arg argument to be verified
+ *
+ *   @return return 1 for true or 0 for false.
+ */
+int flagCount(dString arg) {
+  if (strcmp(arg, "-c") == 0 || strcmp(arg, "--count") == 0) {
     return 1;
   }
   return 0;
 }
 
-int flagOccurrences(dString str) {
-  if (strcmp(str, "-o") == 0 || strcmp(str, "--time") == 0) {
+/**
+ * Function: flagOccurrences
+ * ----------------------------
+ *   @brief Verification function for flag occurrences.
+ *
+ *   @param arg argument to be verified
+ *
+ *   @return return 1 for true or 0 for false.
+ */
+int flagOccurrences(dString arg) {
+  if (strcmp(arg, "-o") == 0 || strcmp(arg, "--time") == 0) {
     return 1;
   }
   return 0;
 }
 
-int flagLineNumber(dString str) {
-  if (strcmp(str, "-n") == 0 || strcmp(str, "--numb") == 0) {
+/**
+ * Function: flagLineNumber
+ * ----------------------------
+ *   @brief Verification function for flag display number of the line.
+ *
+ *   @param arg argument to be verified
+ *
+ *   @return return 1 for true or 0 for false.
+ */
+int flagLineNumber(dString arg) {
+  if (strcmp(arg, "-n") == 0 || strcmp(arg, "--numb") == 0) {
     return 1;
   }
   return 0;
 }
 
-int flagOutput(dString str) {
-  if (strcmp(str, "-d") == 0 || strcmp(str, "--out") == 0) {
+/**
+ * Function: flagOutput
+ * ----------------------------
+ *   @brief Verification function for flag generate clean output file.
+ *
+ *   @param arg argument to be verified
+ *
+ *   @return return 1 for true or 0 for false.
+ */
+int flagOutput(dString arg) {
+  if (strcmp(arg, "-d") == 0 || strcmp(arg, "--out") == 0) {
     return 1;
   }
   return 0;
