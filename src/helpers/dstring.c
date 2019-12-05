@@ -59,13 +59,14 @@ void alterString(dString string, dString content) {
  */
 void concatStr(dString string, int numb, ...) {
   va_list args;
-  size_t strLen = strlen(string);
+  size_t strLen = strlen(string) + 1, newSize = strLen;
 
   va_start(args, numb);
 
   for (int i = 0; i < numb; ++i) {
     dString buf = initString(va_arg(args, dString));
-    string = realloc(string, sizeof(char) * (strlen(buf) + strLen + 1));
+    newSize = newSize + strlen(buf);
+    string = realloc(string, sizeof(char) * newSize);
     strcat(string, buf);
     freeString(buf);
   }
