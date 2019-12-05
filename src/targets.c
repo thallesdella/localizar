@@ -67,7 +67,7 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
 
       if (getFlagStatus(flags, FLAG_OUT)) {
         dString cleanStr = initString(buf);
-        removeSearchTermFromLine(cleanStr, needle);
+        removeSearchTermFromString(cleanStr, needle);
         generateOutputFile(targetPath, cleanStr);
       }
     }
