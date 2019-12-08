@@ -22,7 +22,7 @@
  */
 void getFlagsFromArg(int argc, dStringVector argv) {
   for (unsigned int i = 0; i < flags.count; ++i) {
-    checkFlagsExistence(&flags, &flags.flags[i], argc, argv);
+    checkFlagsExistence(&flags, i, argc, argv);
   }
 }
 
@@ -124,11 +124,29 @@ void grep(void) {
 }
 
 /**
+ * Function: checkConflicts
+ * ----------------------------
+ *   @brief Check to see if there is any conflicts between flags.
+ */
+void checkConflicts() {
+  printDebugMsg("[MAIN] Checking conflicts");
+  if (getFlagStatus(flags, FLAG_OUT) && searchTerm.count > 1) {
+    updateFlagStatus(&flags, FLAG_OUT, 0);
+    printf(
+        "Warning: Generating an Output file only works with common search.\n");
+  }
+}
+
+/**
  * Function: garbageCollector
  * ----------------------------
  *   @brief Deallocate memory allocated during the execution of this script.
  */
 void garbageCollector() {
+  printDebugMsg("[MAIN] Cleaning the dirt");
+  for (unsigned int i = 0; i < flags.count; ++i) {
+    freeString(flags.flags[i].name);
+  }
   free(options);
 
   freeStringVector(searchTerm.terms, searchTerm.count);
@@ -151,13 +169,28 @@ void garbageCollector() {
  */
 int main(int argc, dStringVector argv) {
   superGlobal.isDebug = 0;
-  VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagDebug,         flagHelp,
-                                           flagCaseSensitive, flagCount,
-                                           flagLineNumber,    flagOutput};
+
+  VecFlagsFunc *verifyFlags = malloc(sizeof(VecFlagsFunc) * FLAGS_COUNT);
+  dStringVector flagsName = initStringVector(FLAGS_COUNT);
   options = malloc(sizeof(Option) * FLAGS_COUNT);
 
-  initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
-  printDebugMsg(" -- Debug Mode On -- ");
+  verifyFlags[FLAG_DEBUG] = flagDebug;
+  verifyFlags[FLAG_HELP] = flagHelp;
+  verifyFlags[FLAG_CASE] = flagCaseSensitive;
+  verifyFlags[FLAG_NUMB] = flagLineNumber;
+  verifyFlags[FLAG_COUNT] = flagCount;
+  verifyFlags[FLAG_OCCUR] = flagOccurrences;
+  verifyFlags[FLAG_OUT] = flagOutput;
+
+  flagsName[FLAG_DEBUG] = initString("Debug");
+  flagsName[FLAG_HELP] = initString("Help");
+  flagsName[FLAG_CASE] = initString("Case Sensitive");
+  flagsName[FLAG_NUMB] = initString("Show Line Number");
+  flagsName[FLAG_COUNT] = initString("Count Line");
+  flagsName[FLAG_OCCUR] = initString("Count Occurrences");
+  flagsName[FLAG_OUT] = initString("Generate Output");
+
+  initFlags(&flags, options, flagsName, verifyFlags, FLAGS_COUNT);
 
   initSearchTerm(&searchTerm);
   initTargets(&targets);
@@ -165,6 +198,7 @@ int main(int argc, dStringVector argv) {
 
   parseArguments(argc, argv);
   printDebugMsg("[MAIN] Finish argument parse");
+  checkConflicts();
 
   grep();
 
@@ -174,7 +208,5 @@ int main(int argc, dStringVector argv) {
   printDebugMsg("[MAIN] Finish grep");
 
   garbageCollector();
-  printDebugMsg("[MAIN] Cleaning the dirt");
-
   return 0;
 }
