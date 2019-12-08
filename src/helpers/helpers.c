@@ -22,12 +22,12 @@
  */
 int newLinePosition(FILE *stream, long int start) {
   int c = 0, i = 0;
-  while (c != '\n' && !feof(stream)) {
+  while (c != '\n' && c != EOF) {
     i = ftell(stream);
     c = fgetc(stream);
   }
   fseek(stream, start, SEEK_SET);
-  return i;
+  return i + 1;
 }
 
 /**
@@ -91,9 +91,10 @@ int isDir(dString path) {
  *
  *   @return a random int.
  */
-int randInt() {
-  srand(time(0));
-  return rand();
+unsigned int randInt(unsigned int max, unsigned int min) {
+  max = (max <= 0 || max > RAND_MAX ? RAND_MAX : max);
+  srand(time(NULL));
+  return (rand() % (max - min + 1)) + min;
 }
 
 /**
