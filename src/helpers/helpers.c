@@ -33,7 +33,7 @@ int newLinePosition(FILE *stream, long int start) {
 /**
  * Function: fileExists
  * ----------------------------
- *   @brief Verify if file exists.
+ *   @brief verify if file exists.
  *
  *   @param path path to file.
  *
@@ -89,7 +89,10 @@ int isDir(dString path) {
  * ----------------------------
  *   @brief generate a random int.
  *
- *   @return a random int.
+ *   @param max maximum that a generated number can reach.
+ *   @param min minimum that a generated number can reach.
+ *
+ *   @return random int between max an min.
  */
 unsigned int randInt(unsigned int max, unsigned int min) {
   max = (max <= 0 || max > RAND_MAX ? RAND_MAX : max);
@@ -100,7 +103,7 @@ unsigned int randInt(unsigned int max, unsigned int min) {
 /**
  * Function: printDebugMsg
  * ----------------------------
- *   @brief print debug message
+ *   @brief print debug message.
  *
  *   @param msg message to be displayed.
  */
