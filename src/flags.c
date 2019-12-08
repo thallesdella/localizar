@@ -4,6 +4,7 @@
 
 #include "flags.h"
 #include "dstring.h"
+#include "helpers.h"
 #include "structs.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,17 +13,19 @@
 /**
  * Function: initString
  * ----------------------------
- *   @brief Initiate flags struct.
+ *   @brief initiate flags struct.
  *
  *   @param flags       struct Flags witch will contains information of all
  *                      flags and others.
  *   @param option      struct Options witch contains a flag information.
+ *   @param names       string vector containing flags names.
  *   @param func        array of pointers to verify function.
  *   @param flagsCount  count of flags.
  */
-void initFlags(Flags *flags, Option *option, VecFlagsFunc *func,
-               int flagsCount) {
+void initFlags(Flags *flags, Option *option, dStringVector names,
+               VecFlagsFunc *func, int flagsCount) {
   for (int i = 0; i < flagsCount; ++i) {
+    option[i].name = initString(names[i]);
     option[i].status = 0;
     option[i].verify = func[i];
   }
@@ -30,21 +33,24 @@ void initFlags(Flags *flags, Option *option, VecFlagsFunc *func,
   flags->active = 0;
   flags->count = flagsCount;
   flags->flags = option;
+
+  freeStringVector(names, flagsCount);
+  free(func);
 }
 
 /**
  * Function: displayFlagHelp
  * ----------------------------
- *   @brief Display help screen.
+ *   @brief display help screen.
  *
- *   @param scriptName  nme of the running script.
+ *   @param scriptName  name of the running script.
  *   @param exitCode    exit code number.
  */
 void displayFlagHelp(dString scriptName, int exitCode) {
   printf("-- USAGE --\n");
-  printf("\t./%s [null|flags...] [pattern] [file|dir...]\n", scriptName);
+  printf("\t./%s [OPTION]... PATTERN [FILE|DIRECTORY]...\n", scriptName);
   printf("\t./%s jesus bible.txt all-bibles-in-the-world\n\n", scriptName);
-  printf("-- FLAGS --\n");
+  printf("-- OPTIONS --\n");
   printf("\t-h --help\t - Display help\n");
   printf("\t-i --case\t - Case sensitive search disable\n");
   printf("\t-c --count\t - Display count of lines with has appearances of the "
@@ -59,7 +65,7 @@ void displayFlagHelp(dString scriptName, int exitCode) {
 /**
  * Function: displayFlagCount
  * ----------------------------
- *   @brief Display number of lines with had an occurrence of the SearchTerm.
+ *   @brief display number of lines with had an occurrence of the SearchTerm.
  *
  *   @param target struct Targets witch contains targets information.
  */
@@ -82,7 +88,7 @@ void displayFlagCount(Targets target) {
 /**
  * Function: checkFlagsExistence
  * ----------------------------
- *   @brief Verify is a certain flag exists in arguments passed.
+ *   @brief verify if a certain flag exists in arguments passed.
  *
  *   @param flags   struct Flags witch contains information of all flags and
  *                  others.
@@ -90,41 +96,75 @@ void displayFlagCount(Targets target) {
  *   @param argc    argc arguments count.
  *   @param argv    arguments array.
  */
-void checkFlagsExistence(Flags *flags, Option *option, int argc,
+void checkFlagsExistence(Flags *flags, unsigned int id, int argc,
                          dStringVector argv) {
   for (int i = 1; i < argc; ++i) {
-    if (option->verify(argv[i])) {
-      option->status = 1;
-
-      flags->active = flags->active + 1;
-
-      if (superGlobal.isDebug == 1) {
-        printf("[FLAGS] %s status:active\n", argv[i]);
-      }
+    if (flags->flags[id].verify(argv[i])) {
+      updateFlagStatus(flags, id, 1);
       return;
     }
   }
 }
 
 /**
- * Function: getFlagStatus
+ * Function: updateFlagStatus
  * ----------------------------
- *   @brief Get the flag status.
+ *   @brief update flag status.
+ *
+ *   @param flags   pointer to struct Flags witch contains information of all
+ *                  flags and others.
+ *   @param id      position of flag in array.
+ *   @param status  status of the flag.
+ */
+void updateFlagStatus(Flags *flags, unsigned int id, int status) {
+  flags->flags[id].status = status;
+
+  dString msg = malloc(sizeof(char) * (strlen(getFlagName(*flags, id)) + 21));
+  if (status == 1) {
+    flags->active = flags->active + 1;
+    sprintf(msg, "[FLAGS] %s activated", getFlagName(*flags, id));
+  } else {
+    flags->active = flags->active - 1;
+    sprintf(msg, "[FLAGS] %s deactivated", getFlagName(*flags, id));
+  }
+  printDebugMsg(msg);
+  freeString(msg);
+}
+
+/**
+ * Function: getFlagName
+ * ----------------------------
+ *   @brief return the name of the flag for the id given.
  *
  *   @param flags   struct Flags witch contains information of all flags and
  *                  others.
  *   @param id      position of flag in array.
  *
- *   @return return the target's file path.
+ *   @return name of the flag.
+ */
+dString getFlagName(Flags flags, unsigned int id) {
+  return flags.flags[id].name;
+}
+
+/**
+ * Function: getFlagStatus
+ * ----------------------------
+ *   @brief get the flag status.
+ *
+ *   @param flags   struct Flags witch contains information of all flags and
+ *                  others.
+ *   @param id      position of flag in array.
+ *
+ *   @return target's file path.
  */
 int getFlagStatus(Flags flags, int id) { return flags.flags[id].status; }
 
 /**
  * Function: flagDebug
  * ----------------------------
- *   @brief Verification function for flag debug.
+ *   @brief verification function for flag debug.
  *
- *   @param arg argument to be verified
+ *   @param arg argument to be verified.
  *
  *   @return return 1 for true or 0 for false.
  */
@@ -139,9 +179,9 @@ int flagDebug(dString arg) {
 /**
  * Function: flagHelp
  * ----------------------------
- *   @brief Verification function for flag help.
+ *   @brief verification function for flag help.
  *
- *   @param arg argument to be verified
+ *   @param arg argument to be verified.
  *
  *   @return return 1 for true or 0 for false.
  */
@@ -155,9 +195,9 @@ int flagHelp(dString arg) {
 /**
  * Function: flagCaseSensitive
  * ----------------------------
- *   @brief Verification function for flag case sensitive.
+ *   @brief verification function for flag case sensitive.
  *
- *   @param arg argument to be verified
+ *   @param arg argument to be verified.
  *
  *   @return return 1 for true or 0 for false.
  */
@@ -171,9 +211,9 @@ int flagCaseSensitive(dString arg) {
 /**
  * Function: flagCount
  * ----------------------------
- *   @brief Verification function for flag count lines that have occurrences.
+ *   @brief verification function for flag count lines that have occurrences.
  *
- *   @param arg argument to be verified
+ *   @param arg argument to be verified.
  *
  *   @return return 1 for true or 0 for false.
  */
@@ -187,9 +227,9 @@ int flagCount(dString arg) {
 /**
  * Function: flagOccurrences
  * ----------------------------
- *   @brief Verification function for flag occurrences.
+ *   @brief verification function for flag occurrences.
  *
- *   @param arg argument to be verified
+ *   @param arg argument to be verified.
  *
  *   @return return 1 for true or 0 for false.
  */
@@ -203,9 +243,9 @@ int flagOccurrences(dString arg) {
 /**
  * Function: flagLineNumber
  * ----------------------------
- *   @brief Verification function for flag display number of the line.
+ *   @brief verification function for flag display number of the line.
  *
- *   @param arg argument to be verified
+ *   @param arg argument to be verified.
  *
  *   @return return 1 for true or 0 for false.
  */
@@ -219,9 +259,9 @@ int flagLineNumber(dString arg) {
 /**
  * Function: flagOutput
  * ----------------------------
- *   @brief Verification function for flag generate clean output file.
+ *   @brief verification function for flag generate clean output file.
  *
- *   @param arg argument to be verified
+ *   @param arg argument to be verified.
  *
  *   @return return 1 for true or 0 for false.
  */
