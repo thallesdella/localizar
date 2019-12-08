@@ -12,8 +12,9 @@
 #define FLAG_HELP 1
 #define FLAG_CASE 2
 #define FLAG_COUNT 3
-#define FLAG_NUMB 4
-#define FLAG_OUT 5
+#define FLAG_OCCUR 4
+#define FLAG_NUMB 5
+#define FLAG_OUT 6
 
 typedef int (*VecFlagsFunc)(dString);
 
@@ -40,6 +41,8 @@ int flagHelp(dString arg);
 int flagCaseSensitive(dString arg);
 
 int flagCount(dString arg);
+
+int flagOccurrences(dString arg);
 
 int flagLineNumber(dString arg);
 
