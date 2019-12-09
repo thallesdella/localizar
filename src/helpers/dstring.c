@@ -20,7 +20,8 @@
  */
 dString initString(dString content) {
   if (content == NULL) {
-    dString buf = calloc(1, sizeof(char));
+    dString buf = malloc(sizeof(char));
+    strcpy(buf, "");
     return buf;
   }
 
@@ -101,6 +102,15 @@ dStringVector initStringVector(unsigned int size) {
   }
 
   return buf;
+}
+
+void changeStringVectorSize(dStringVector vector, unsigned int oldSize,
+                            unsigned int newSize) {
+  vector = realloc(vector, sizeof(dString) * newSize);
+
+  for (unsigned int i = oldSize; i < newSize; ++i) {
+    vector[i] = initString(NULL);
+  }
 }
 
 /**

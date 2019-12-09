@@ -31,9 +31,9 @@ void initSearchTerm(SearchTerm *searchTerm) {
  *   @param term        term to be add to the SearchTerm struct.
  */
 void addSearchTerm(SearchTerm *searchTerm, dString term) {
-  searchTerm->count = countAppearances(term, "*") + 1;
-  searchTerm->terms =
-      realloc(searchTerm->terms, sizeof(dString) * searchTerm->count);
+  int newSize = countAppearances(term, "*") + 1;
+  changeStringVectorSize(searchTerm->terms, searchTerm->count, newSize);
+  searchTerm->count = newSize;
 
   if (searchTerm->count > 1) {
     explode(term, "*", searchTerm->terms);
