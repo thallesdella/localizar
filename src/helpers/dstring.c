@@ -41,11 +41,11 @@ dString initString(dString content) {
 void alterString(dString string, dString content) {
   size_t oldLen = strlen(string) + 1, newLen = strlen(content) + 1;
 
-  if (newLen > oldLen || newLen <= (oldLen - 16)) {
+  if ((newLen + 16) < oldLen || newLen > oldLen) {
     string = realloc(string, sizeof(char) * newLen);
   }
 
-  strcpy(string, content);
+  memcpy(string, content, newLen);
 }
 
 /**
@@ -204,7 +204,7 @@ void removeSubstr(dString string, dString remove) {
  *   @param string  target string.
  *   @param numb    int to be converted.
  */
-void intToStr(dString string, int numb) {
+void intToStr(dString string, unsigned int numb) {
   dString buf = malloc(sizeof(int) * 8 + 1);
   sprintf(buf, "%d", numb);
 
@@ -272,8 +272,29 @@ void explode(dString string, dString delimiter, dStringVector result) {
  */
 void implode(dStringVector vector, unsigned int size, dString glue,
              dString result) {
-  for (unsigned int i = 0; i < size; ++i) {
+  size_t newLen = 0, glueLen = strlen(glue);
+
+  for (unsigned int i = 0; i <= size; ++i) {
+    newLen = newLen + strlen(vector[i]);
+    if ((i + 1) < size) {
+      newLen = newLen + glueLen;
+    } else {
+      newLen = newLen + 1;
+    }
+  }
+
+  realloc(result, sizeof(char) * newLen);
+
+  for (unsigned int i = 0; i <= size; ++i) {
+
+    if (i == 0) {
+      strcpy(result, vector[0]);
+      strcat(result, glue);
+      continue;
+    }
+
     strcat(result, vector[i]);
+
     if ((i + 1) < size) {
       strcat(result, glue);
     }

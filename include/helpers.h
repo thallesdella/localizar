@@ -16,7 +16,7 @@ int isFile(dString path);
 
 int isDir(dString path);
 
-unsigned int randInt();
+unsigned int randInt(unsigned int max, unsigned int min);
 
 void printDebugMsg(dString msg);
 

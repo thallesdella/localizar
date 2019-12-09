@@ -178,7 +178,9 @@ void addTarget(Targets *targets, dString targetPath) {
  */
 void generateOutputFile(dString name, dString content) {
   dString buf = initString(name);
+  printf("before:%s\n", buf);
   generateName(buf);
+  printf("after:%s\n", buf);
 
   FILE *targetFile = fopen(buf, "a");
 
@@ -204,21 +206,38 @@ void generateName(dString baseName) {
   int count = countAppearances(buf, ".");
 
   dStringVector rand = initStringVector(2);
-  intToStr(rand[0], randInt());
-  intToStr(rand[1], randInt());
+  intToStr(rand[0], randInt(9999, 1000));
+  intToStr(rand[1], randInt(9999, 1000));
 
   if (count == 0) {
-    concatStr(baseName, 3, "_", rand[0], rand[1]);
+    baseName = realloc(baseName, sizeof(char) * (strlen(baseName) + 10));
+    sprintf(baseName, "%s_%s%s", baseName, rand[0], rand[0]);
+    // concatStr(baseName, 3, "_", rand[0], rand[1]);
     return;
   }
 
   dStringVector bufVec = initStringVector(count);
   explode(buf, ".", bufVec);
 
-  concatStr(baseName, 3, "_", rand[0], rand[1]);
+  int lastNamePiece = count - 1;
+  bufVec[lastNamePiece] =
+      realloc(bufVec[lastNamePiece],
+              sizeof(char) * (strlen(bufVec[lastNamePiece]) + 10));
+  sprintf(bufVec[lastNamePiece], "%s_%s%s", bufVec[lastNamePiece], rand[0],
+          rand[1]);
+  // printf("name:%s\n", bufVec[lastNamePiece]);
+
+  // printf("path:%s\n", baseName);
+  // concatStr(bufVec[lastNamePiece], 3, "_", rand[0], rand[1]);
+  // printf("path:%s\n", baseName);
 
   implode(bufVec, count, ".", buf);
-  alterString(baseName, buf);
+
+  // printf("debug:%s\n", buf);
+  baseName = realloc(baseName, sizeof(char) * (strlen(buf) + 1));
+  strcpy(baseName, buf);
+  // alterString(baseName, buf);
+  // printf("basename:%s\n", baseName);
 
   freeStringVector(bufVec, count);
   freeString(buf);

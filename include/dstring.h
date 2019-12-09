@@ -32,7 +32,7 @@ void applyFuncToStrings(dStringVector vector, unsigned int size,
 
 void removeSubstr(dString string, dString remove);
 
-void intToStr(dString string, int numb);
+void intToStr(dString string, unsigned int numb);
 
 int countAppearances(dString string, dString token);
 
