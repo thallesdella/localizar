@@ -6,6 +6,7 @@
 #include "dstring.h"
 #include "structs.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * Function: initSearchTerm
@@ -31,12 +32,14 @@ void initSearchTerm(SearchTerm *searchTerm) {
  */
 void addSearchTerm(SearchTerm *searchTerm, dString term) {
   searchTerm->count = countAppearances(term, "*") + 1;
+  searchTerm->terms =
+      realloc(searchTerm->terms, sizeof(dString) * searchTerm->count);
 
   if (searchTerm->count > 1) {
     explode(term, "*", searchTerm->terms);
   } else {
     searchTerm->count = 1;
-    searchTerm->terms[0] = initString(term);
+    alterString(searchTerm->terms[0], term);
   }
 
   if (superGlobal.isDebug == 1) {
