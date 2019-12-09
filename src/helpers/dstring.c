@@ -21,12 +21,13 @@
 dString initString(dString content) {
   if (content == NULL) {
     dString buf = malloc(sizeof(char));
+    strcpy(buf, "");
     return buf;
   }
 
   size_t len = strlen(content) + 1;
   dString buf = malloc(sizeof(char) * len);
-  memcpy(buf, content, len);
+  strcpy(buf, content);
   return buf;
 }
 
@@ -45,7 +46,7 @@ void alterString(dString string, dString content) {
     string = realloc(string, sizeof(char) * newLen);
   }
 
-  memcpy(string, content, newLen);
+  strcpy(string, content);
 }
 
 /**
@@ -58,17 +59,19 @@ void alterString(dString string, dString content) {
  *   @param ...     strings to concatenate.
  */
 void concatStr(dString string, int numb, ...) {
-  va_list args;
+  va_list argsLen, args;
   size_t strLen = strlen(string) + 1, newSize = strLen;
 
   va_start(args, numb);
+  va_copy(argsLen, args);
+  for (int i = 0; i < numb; ++i) {
+    newSize = newSize + strlen(va_arg(argsLen, dString));
+  }
+
+  string = realloc(string, sizeof(char) * newSize);
 
   for (int i = 0; i < numb; ++i) {
-    dString buf = initString(va_arg(args, dString));
-    newSize = newSize + strlen(buf);
-    string = realloc(string, sizeof(char) * newSize);
-    strcat(string, buf);
-    freeString(buf);
+    strcat(string, va_arg(args, dString));
   }
 
   va_end(args);
@@ -209,11 +212,9 @@ void intToStr(dString string, unsigned int numb) {
   sprintf(buf, "%d", numb);
 
   size_t bufLen = strlen(buf) + 1;
-  if (bufLen > (strlen(string) + 1)) {
-    string = realloc(string, bufLen + 1);
-  }
+  string = realloc(string, bufLen);
 
-  memcpy(string, buf, bufLen + 1);
+  memcpy(string, buf, bufLen);
   freeString(buf);
 }
 
@@ -249,14 +250,14 @@ int countAppearances(dString string, dString token) {
  *   @param result      buffer for vector of strings.
  */
 void explode(dString string, dString delimiter, dStringVector result) {
-  dString tok;
-  int i = 0;
+  dString tok = strtok(string, delimiter);
+  int i = 0, count = countAppearances(string, delimiter);
 
-  tok = strtok(string, delimiter);
-  while (tok != NULL) {
-    result[i] = initString(tok);
+  result = realloc(result, sizeof(dString) * (count + 1));
+
+  for (i; tok != NULL; ++i) {
+    alterString(result[i], tok);
     tok = strtok(NULL, delimiter);
-    i = i + 1;
   }
 }
 
@@ -283,7 +284,7 @@ void implode(dStringVector vector, unsigned int size, dString glue,
     }
   }
 
-  realloc(result, sizeof(char) * newLen);
+  result = realloc(result, sizeof(char) * newLen);
 
   for (unsigned int i = 0; i <= size; ++i) {
 
