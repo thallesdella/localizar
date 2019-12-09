@@ -33,9 +33,6 @@ void initFlags(Flags *flags, Option *option, dStringVector names,
   flags->active = 0;
   flags->count = flagsCount;
   flags->flags = option;
-
-  freeStringVector(names, flagsCount);
-  free(func);
 }
 
 /**

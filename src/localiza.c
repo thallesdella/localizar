@@ -197,6 +197,8 @@ int main(int argc, dStringVector argv) {
   alterString(flagsName[FLAG_OUT], "Generate Output");
 
   initFlags(&flags, options, flagsName, verifyFlags, FLAGS_COUNT);
+  freeStringVector(flagsName, FLAGS_COUNT);
+  free(verifyFlags);
 
   initSearchTerm(&searchTerm);
   initTargets(&targets);
