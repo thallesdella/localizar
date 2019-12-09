@@ -44,7 +44,6 @@ void alterString(dString string, dString content) {
   if ((newLen + 16) < oldLen || newLen > oldLen) {
     string = realloc(string, sizeof(char) * newLen);
   }
-
   strcpy(string, content);
 }
 

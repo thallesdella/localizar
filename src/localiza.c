@@ -186,13 +186,15 @@ int main(int argc, dStringVector argv) {
   verifyFlags[FLAG_OCCUR] = flagOccurrences;
   verifyFlags[FLAG_OUT] = flagOutput;
 
-  flagsName[FLAG_DEBUG] = initString("Debug");
-  flagsName[FLAG_HELP] = initString("Help");
-  flagsName[FLAG_CASE] = initString("Case Sensitive");
-  flagsName[FLAG_NUMB] = initString("Show Line Number");
-  flagsName[FLAG_COUNT] = initString("Count Line");
-  flagsName[FLAG_OCCUR] = initString("Count Occurrences");
-  flagsName[FLAG_OUT] = initString("Generate Output");
+  printf("teste\n");
+
+  alterString(flagsName[FLAG_DEBUG], "Debug");
+  alterString(flagsName[FLAG_HELP], "Help");
+  alterString(flagsName[FLAG_CASE], "Case Sensitive");
+  alterString(flagsName[FLAG_NUMB], "Show Line Number");
+  alterString(flagsName[FLAG_COUNT], "Count Line");
+  alterString(flagsName[FLAG_OCCUR], "Count Occurrences");
+  alterString(flagsName[FLAG_OUT], "Generate Output");
 
   initFlags(&flags, options, flagsName, verifyFlags, FLAGS_COUNT);
 

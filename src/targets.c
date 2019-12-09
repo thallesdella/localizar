@@ -148,11 +148,7 @@ void addTarget(Targets *targets, dString targetPath) {
   unsigned int id = targets->count;
 
   targets->count = targets->count + 1;
-
-  if (targets->count > 1) {
-    targets->targets =
-        realloc(targets->targets, sizeof(Target) * targets->count);
-  }
+  targets->targets = realloc(targets->targets, sizeof(Target) * targets->count);
 
   Target *target = &targets->targets[id];
   target->occurrences = 0;
