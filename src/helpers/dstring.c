@@ -20,8 +20,7 @@
  */
 dString initString(dString content) {
   if (content == NULL) {
-    dString buf = malloc(sizeof(char));
-    strcpy(buf, "");
+    dString buf = calloc(1, sizeof(char));
     return buf;
   }
 
@@ -58,9 +57,9 @@ void alterString(dString string, dString content) {
  *   @param numb    number of strings to concatenate.
  *   @param ...     strings to concatenate.
  */
-void concatStr(dString string, int numb, ...) {
+void concatStr(dString *string, int numb, ...) {
   va_list argsLen, args;
-  size_t strLen = strlen(string) + 1, newSize = strLen;
+  size_t strLen = strlen(*string) + 1, newSize = strLen;
 
   va_start(args, numb);
   va_copy(argsLen, args);
@@ -68,10 +67,10 @@ void concatStr(dString string, int numb, ...) {
     newSize = newSize + strlen(va_arg(argsLen, dString));
   }
 
-  string = realloc(string, sizeof(char) * newSize);
+  *string = realloc(*string, sizeof(char) * newSize);
 
   for (int i = 0; i < numb; ++i) {
-    strcat(string, va_arg(args, dString));
+    strcat(*string, va_arg(args, dString));
   }
 
   va_end(args);

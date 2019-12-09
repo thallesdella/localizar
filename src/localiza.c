@@ -48,12 +48,9 @@ void getSearchTermFromArg(dStringVector argv) {
  */
 void getTargetsFromArg(int argc, dStringVector argv) {
   unsigned int initTargetPosition = flags.active + 2;
-  unsigned int currentTargetPosition = initTargetPosition;
-  unsigned int targetsCount = argc - initTargetPosition;
 
-  for (unsigned int i = 0; i < targetsCount; ++i) {
-    addTarget(&targets, argv[currentTargetPosition]);
-    currentTargetPosition = currentTargetPosition + 1;
+  for (unsigned int i = initTargetPosition; i < argc; ++i) {
+    addTarget(&targets, argv[i]);
   }
 }
 
@@ -79,6 +76,9 @@ void parseArguments(int argc, dStringVector argv) {
 
   getSearchTermFromArg(argv);
   getTargetsFromArg(argc, argv);
+  for (int i = 0; i < searchTerm.count; ++i) {
+    printf("parse - needle:%s\n", searchTerm.terms[i]);
+  }
 }
 
 /**
@@ -88,6 +88,10 @@ void parseArguments(int argc, dStringVector argv) {
  *      in a file.
  */
 void grep(void) {
+  for (int i = 0; i < searchTerm.count; ++i) {
+    printf("grep - needle:%s\n", searchTerm.terms[i]);
+  }
+
   for (unsigned int i = 0; i < targets.count; ++i) {
     if (targets.targets[i].isDir) {
       scanDir(&targets, getTargetPath(targets, i));

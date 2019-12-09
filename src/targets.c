@@ -27,6 +27,10 @@
  *              and occurrences.
  */
 int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
+  for (int i = 0; i < needle.count; ++i) {
+    printf("target - needle:%s\n", needle.terms[i]);
+  }
+
   FILE *targetFile = fopen(targetPath, "r");
   int *r = malloc(sizeof(int) * 3);
   r[0] = 0;
@@ -95,6 +99,7 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
  *   @param path    path to the directory.
  */
 void scanDir(Targets *target, dString path) {
+  printDebugMsg("[SCAN_DIRECTORY] scanning dir...");
   DIR *targetDir = opendir(path);
   struct dirent *dir;
 
@@ -108,13 +113,8 @@ void scanDir(Targets *target, dString path) {
       continue;
     }
 
-    dString buf =
-        malloc(sizeof(char) * (strlen(path) + strlen(dir->d_name) + 2));
-    sprintf(buf, "%s/%s", path, dir->d_name);
-    /*dString buf = initString(path);
-    printf(" -- scanDir - %s\n", buf);
-    concatStr(buf, 2, "/", dir->d_name);
-    printf("scanDir - %s -- \n", buf);*/
+    dString buf = initString(path);
+    concatStr(&buf, 2, "/", dir->d_name);
 
     addTarget(target, buf);
     freeString(buf);
@@ -210,9 +210,9 @@ void generateName(dString baseName) {
   intToStr(rand[1], randInt(9999, 1000));
 
   if (count == 0) {
-    baseName = realloc(baseName, sizeof(char) * (strlen(baseName) + 10));
-    sprintf(baseName, "%s_%s%s", baseName, rand[0], rand[0]);
-    // concatStr(baseName, 3, "_", rand[0], rand[1]);
+    // baseName = realloc(baseName, sizeof(char) * (strlen(baseName) + 10));
+    // sprintf(baseName, "%s_%s%s", baseName, rand[0], rand[0]);
+    concatStr(&baseName, 3, "_", rand[0], rand[1]);
     return;
   }
 
@@ -220,16 +220,13 @@ void generateName(dString baseName) {
   explode(buf, ".", bufVec);
 
   int lastNamePiece = count - 1;
-  bufVec[lastNamePiece] =
+  /*bufVec[lastNamePiece] =
       realloc(bufVec[lastNamePiece],
               sizeof(char) * (strlen(bufVec[lastNamePiece]) + 10));
   sprintf(bufVec[lastNamePiece], "%s_%s%s", bufVec[lastNamePiece], rand[0],
-          rand[1]);
-  // printf("name:%s\n", bufVec[lastNamePiece]);
+          rand[1]);*/
 
-  // printf("path:%s\n", baseName);
-  // concatStr(bufVec[lastNamePiece], 3, "_", rand[0], rand[1]);
-  // printf("path:%s\n", baseName);
+  concatStr(&bufVec[lastNamePiece], 3, "_", rand[0], rand[1]);
 
   implode(bufVec, count, ".", buf);
 
@@ -328,6 +325,7 @@ int countSearchTermOccurrence(SearchTerm needle, dString haystack,
 
   while (verifySearchTermPresence(needle, buf, flags)) {
     count = count + 1;
+    printf("occurrences:%d\n", count);
   }
 
   freeString(buf);
@@ -356,6 +354,7 @@ int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags) {
              ? strstr(strToLower(haystack), strToLower(needle.terms[i]))
              : strstr(haystack, needle.terms[i]));
 
+    printf("needle:%s haystack:%s\n", needle.terms[i], haystack);
     if (hasString != NULL) {
       testsPassed = testsPassed + 1;
       strcpy(haystack, hasString + 1);
