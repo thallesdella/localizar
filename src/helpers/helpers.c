@@ -59,14 +59,14 @@ void generateName(dString baseName) {
   intToStr(rand[1], randInt());
 
   if (count == 0) {
-    concatStr(&baseName, 3, "_", rand[0], rand[1]);
+    baseName = concatStr(baseName, 3, "_", rand[0], rand[1]);
     return;
   }
 
   dStringVector bufVec = initStringVector(count);
   explode(buf, ".", bufVec);
 
-  concatStr(&baseName, 3, "_", rand[0], rand[1]);
+  bufVec[count - 1] = concatStr(bufVec[count - 1], 3, "_", rand[0], rand[1]);
 
   implode(bufVec, count, ".", buf);
   alterString(baseName, buf);
