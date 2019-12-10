@@ -129,7 +129,6 @@ int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags) {
     if (hasString != NULL) {
       testsPassed = testsPassed + 1;
       memcpy(haystack, hasString + 1, strlen(hasString) + 1);
-      // strcpy(haystack, hasString + 1);
     }
   }
 
