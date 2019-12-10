@@ -54,13 +54,10 @@ void scanDir(Targets *target, dString path) {
  *   @param content content to append to file.
  */
 void generateOutputFile(dString name, dString content) {
-  dString buf = initString(name);
-  generateName(buf);
-
-  FILE *targetFile = fopen(buf, "a");
+  FILE *targetFile = fopen(name, "a");
 
   if (targetFile == NULL) {
-    printf("%s: Unable to open file.\n", buf);
+    printf("%s: Unable to open file.\n", name);
     return;
   }
 

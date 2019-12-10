@@ -118,9 +118,9 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
       }
 
       if (getFlagStatus(flags, FLAG_OUT)) {
-        dString cleanStr = initString(buf);
-        removeSearchTermFromString(cleanStr, needle);
-        // generateOutputFile(targetPath, cleanStr);
+        removeSearchTermFromString(buf, needle);
+        buf = concatStr(buf, 1, "\n");
+        generateOutputFile("aaa.txt", buf);
       }
     }
     freeString(buf);

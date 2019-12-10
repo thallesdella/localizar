@@ -228,11 +228,12 @@ void applyFuncToStrings(dStringVector vector, unsigned int size,
  *   @param string target string.
  *   @param remove position of target in array.
  */
-void removeSubstr(dString string, dString remove) {
+dString removeSubstr(dString string, dString remove) {
   size_t length = strlen(remove);
   while ((string = strstr(string, remove))) {
     memmove(string, string + length, 1 + strlen(string + length));
   }
+  return string;
 }
 
 /**

@@ -70,7 +70,7 @@ void addSearchTerm(SearchTerm *searchTerm, dString term) {
  */
 void removeSearchTermFromString(dString string, SearchTerm searchTerm) {
   for (int i = 0; i < searchTerm.count; ++i) {
-    removeSubstr(string, searchTerm.terms[i]);
+    string = removeSubstr(string, searchTerm.terms[i]);
   }
 }
 
