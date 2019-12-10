@@ -21,6 +21,7 @@
 dString initString(dString content) {
   if (content == NULL) {
     dString buf = malloc(sizeof(char));
+    strcpy(buf, "");
     return buf;
   }
 
