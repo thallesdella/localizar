@@ -102,12 +102,37 @@ dStringVector initStringVector(unsigned int size) {
   return buf;
 }
 
+/**
+ * Function: changeStringVectorSize *BUG?
+ * ----------------------------
+ *   @brief change vector of strings`s size.
+ *
+ *   @param vector vector to be changed
+ *   @param oldSize old size of vector.
+ *   @param newSize new size of vector.
+ *
+ *   @return return a pointer to a vector of strings.
+ */
 dStringVector changeStringVectorSize(dStringVector vector, unsigned int oldSize,
                                      unsigned int newSize) {
+  if (oldSize == newSize) {
+    return vector;
+  }
+
+  if (oldSize > newSize) {
+    for (unsigned int i = oldSize; i > newSize; --i) {
+      printf("removing - position:%u\n", i);
+      free(vector[i]);
+    }
+  }
+
   vector = realloc(vector, sizeof(dString) * newSize);
 
-  for (unsigned int i = oldSize; i < newSize; ++i) {
-    vector[i] = initString(NULL);
+  if (newSize > oldSize) {
+    for (unsigned int i = oldSize; i < newSize; ++i) {
+      printf("adding - position:%u\n", i);
+      vector[i] = initString(NULL);
+    }
   }
   return vector;
 }

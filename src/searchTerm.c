@@ -35,15 +35,19 @@ void initSearchTerm(SearchTerm *searchTerm) {
  *   @param term        term to be add to the SearchTerm struct.
  */
 void addSearchTerm(SearchTerm *searchTerm, dString term) {
-  int newSize = countAppearances(term, "*") + 1;
+  searchTerm->count = countAppearances(term, "*") + 1;
+  searchTerm->terms =
+      realloc(searchTerm->terms, sizeof(dString) * searchTerm->count);
+  /*int newSize = countAppearances(term, "*") + 1;
   searchTerm->terms =
       changeStringVectorSize(searchTerm->terms, searchTerm->count, newSize);
-  searchTerm->count = newSize;
+  searchTerm->count = newSize;*/
 
   if (searchTerm->count > 1) {
     explode(term, "*", searchTerm->terms);
   } else {
-    alterString(searchTerm->terms[0], term);
+    searchTerm->terms[0] = initString(term);
+    // alterString(searchTerm->terms[0], term);
   }
 
   if (superGlobal.isDebug == 1) {
