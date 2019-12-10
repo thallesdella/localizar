@@ -3,11 +3,8 @@
 //
 
 #include "helpers.h"
-#include "dstring.h"
-#include "structs.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 #include <time.h>
 
 /**
@@ -15,73 +12,20 @@
  * ----------------------------
  *   @brief find the next end of the line.
  *
- *   @param stream file stream.
+ *   @param stream pointer to a file stream.
  *   @param start position of file's start.
  *
  *   @return new line char position.
  */
-int newLinePosition(FILE *stream, long int start) {
+int newLinePosition(void *stream, long int start) {
+  FILE *file = (FILE *)stream;
   int c = 0, i = 0;
-  while (c != '\n' && !feof(stream)) {
-    i = ftell(stream);
-    c = fgetc(stream);
+  while (c != '\n' && !feof(file)) {
+    i = ftell(file);
+    c = fgetc(file);
   }
-  fseek(stream, start, SEEK_SET);
+  fseek(file, start, SEEK_SET);
   return i;
-}
-
-/**
- * Function: fileExists
- * ----------------------------
- *   @brief Verify if file exists.
- *
- *   @param path path to file.
- *
- *   @return 1 for true and 0 for false.
- */
-int fileExists(dString path) {
-  Stat statBuf;
-  if (stat(path, &statBuf) == 0) {
-    return 1;
-  }
-  return 0;
-}
-
-/**
- * Function: isFile
- * ----------------------------
- *   @brief verify if is file.
- *
- *   @param path path to file.
- *
- *   @return 1 for true and 0 for false.
- */
-int isFile(dString path) {
-  Stat statBuf;
-  stat(path, &statBuf);
-
-  if (stat(path, &statBuf) == 0) {
-    return S_ISREG(statBuf.st_mode);
-  }
-  return 0;
-}
-
-/**
- * Function: isDir
- * ----------------------------
- *   @brief verify if is directory.
- *
- *   @param path path to file.
- *
- *   @return 1 for true and 0 for false.
- */
-int isDir(dString path) {
-  Stat statBuf;
-
-  if (stat(path, &statBuf) == 0) {
-    return S_ISDIR(statBuf.st_mode);
-  }
-  return 0;
 }
 
 /**
@@ -94,6 +38,41 @@ int isDir(dString path) {
 int randInt() {
   srand(time(0));
   return rand();
+}
+
+/**
+ * Function: generateName
+ * ----------------------------
+ *   @brief Generate a new name adding random number to the end of the
+ *      files's name.
+ *
+ *   @category Output File
+ *
+ *   @param baseName name to be altered.
+ */
+void generateName(dString baseName) {
+  dString buf = initString(baseName);
+  int count = countAppearances(buf, ".");
+
+  dStringVector rand = initStringVector(2);
+  intToStr(rand[0], randInt());
+  intToStr(rand[1], randInt());
+
+  if (count == 0) {
+    concatStr(baseName, 3, "_", rand[0], rand[1]);
+    return;
+  }
+
+  dStringVector bufVec = initStringVector(count);
+  explode(buf, ".", bufVec);
+
+  concatStr(baseName, 3, "_", rand[0], rand[1]);
+
+  implode(bufVec, count, ".", buf);
+  alterString(baseName, buf);
+
+  freeStringVector(bufVec, count);
+  freeString(buf);
 }
 
 /**

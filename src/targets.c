@@ -3,14 +3,55 @@
 //
 
 #include "targets.h"
-#include "dstring.h"
 #include "flags.h"
-#include "helpers.h"
-#include "structs.h"
-#include <dirent.h>
+#include "searchTerm.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
+/**
+ * Function: initTargets
+ * ----------------------------
+ *   @brief Initiate targets struct.
+ *
+ *   @category Target
+ *
+ *   @param target  struct Targets witch contains targets information.
+ */
+void initTargets(Targets *targets) {
+  targets->count = 0;
+  targets->totalHotLines = 0;
+  targets->totalOccurrences = 0;
+  targets->targets = malloc(sizeof(Target));
+}
+
+/**
+ * Function: addTarget
+ * ----------------------------
+ *   @brief Update de struct targets and add a new target to the struct.
+ *
+ *   @category Target
+ *
+ *   @param target      struct Targets witch contains targets information.
+ *   @param targetPath  path to the file.
+ */
+void addTarget(Targets *targets, dString targetPath) {
+  unsigned int id = targets->count;
+  targets->count = targets->count + 1;
+  targets->targets = realloc(targets->targets, sizeof(Target) * targets->count);
+
+  Target *target = &targets->targets[id];
+  target->occurrences = 0;
+  target->hotLines = 0;
+  target->isFile = isFile(targetPath);
+  target->isDir = isDir(targetPath);
+  target->path = initString(targetPath);
+
+  if (superGlobal.isDebug == 1) {
+    printf("[ADD_TARGET] %s - isFile:%d isDir:%d hotLines:%d occurrences:%d\n",
+           target->path, target->isFile, target->isDir, target->hotLines,
+           target->occurrences);
+  }
+}
 
 /**
  * Function: searchInTarget
@@ -88,169 +129,6 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
 }
 
 /**
- * Function: scanDir
- * ----------------------------
- *   @brief Search crawl a directory for files and directories.
- *
- *   @category Grep
- *
- *   @param target  struct Targets witch contains targets information.
- *   @param path    path to the directory.
- */
-void scanDir(Targets *target, dString path) {
-  DIR *targetDir = opendir(path);
-  struct dirent *dir;
-
-  if (targetDir == NULL) {
-    printf("%s:Directory not found", path);
-    return;
-  }
-
-  while ((dir = readdir(targetDir)) != NULL) {
-    if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
-      continue;
-    }
-
-    dString buf =
-        malloc(sizeof(char) * (strlen(path) + strlen(dir->d_name) + 2));
-    sprintf(buf, "%s/%s", path, dir->d_name);
-    /*dString buf = initString(path);
-    printf(" -- scanDir - %s\n", buf);
-    concatStr(buf, 2, "/", dir->d_name);
-    printf("scanDir - %s -- \n", buf);*/
-
-    addTarget(target, buf);
-    freeString(buf);
-  }
-  closedir(targetDir);
-}
-
-/**
- * Function: initTargets
- * ----------------------------
- *   @brief Initiate targets struct.
- *
- *   @category Target
- *
- *   @param target  struct Targets witch contains targets information.
- */
-void initTargets(Targets *targets) {
-  targets->count = 0;
-  targets->totalHotLines = 0;
-  targets->totalOccurrences = 0;
-  targets->targets = malloc(sizeof(Target));
-}
-
-/**
- * Function: addTarget
- * ----------------------------
- *   @brief Update de struct targets and add a new target to the struct.
- *
- *   @category Target
- *
- *   @param target      struct Targets witch contains targets information.
- *   @param targetPath  path to the file.
- */
-void addTarget(Targets *targets, dString targetPath) {
-  unsigned int id = targets->count;
-
-  targets->count = targets->count + 1;
-
-  if (targets->count > 1) {
-    targets->targets =
-        realloc(targets->targets, sizeof(Target) * targets->count);
-  }
-
-  Target *target = &targets->targets[id];
-  target->occurrences = 0;
-  target->hotLines = 0;
-  target->isFile = isFile(targetPath);
-  target->isDir = isDir(targetPath);
-  target->path = initString(targetPath);
-
-  if (superGlobal.isDebug == 1) {
-    printf("[ADD_TARGET] %s - isFile:%d isDir:%d hotLines:%d occurrences:%d\n",
-           target->path, target->isFile, target->isDir, target->hotLines,
-           target->occurrences);
-  }
-}
-
-/**
- * Function: generateOutputFile
- * ----------------------------
- *   @brief Generate an output file.
- *
- *   @category Output File
- *
- *   @param name    name of the file to generate.
- *   @param content content to append to file.
- */
-void generateOutputFile(dString name, dString content) {
-  dString buf = initString(name);
-  generateName(buf);
-
-  FILE *targetFile = fopen(buf, "a");
-
-  if (targetFile == NULL) {
-    printf("%s: Unable to open file.\n", buf);
-    return;
-  }
-
-  fputs(content, targetFile);
-  fclose(targetFile);
-}
-
-/**
- * Function: generateName
- * ----------------------------
- *   @brief Generate a new name adding random number to the end of the
- *      files's name.
- *
- *   @category Output File
- *
- *   @param baseName name to be altered.
- */
-void generateName(dString baseName) {
-  dString buf = initString(baseName);
-  int count = countAppearances(buf, ".");
-
-  dStringVector rand = initStringVector(2);
-  intToStr(rand[0], randInt());
-  intToStr(rand[1], randInt());
-
-  if (count == 0) {
-    concatStr(baseName, 3, "_", rand[0], rand[1]);
-    return;
-  }
-
-  dStringVector bufVec = initStringVector(count);
-  explode(buf, ".", bufVec);
-
-  concatStr(baseName, 3, "_", rand[0], rand[1]);
-
-  implode(bufVec, count, ".", buf);
-  alterString(baseName, buf);
-
-  freeStringVector(bufVec, count);
-  freeString(buf);
-}
-
-/**
- * Function: printMsgForFile
- * ----------------------------
- *   @brief print a message for a specific file.
- *
- *   @category Target
- *
- *   @param target  struct Targets witch contains targets information.
- *   @param id      position of target in array.
- *   @param message message to display.
- */
-void printMsgForFile(Targets target, unsigned int id, dString message) {
-  printf("%s:%s\n", getTargetPath(target, id), message);
-}
-
-/**
  * Function: getTargetPath
  * ----------------------------
  *   @brief Get the path for target's file.
@@ -264,65 +142,4 @@ void printMsgForFile(Targets target, unsigned int id, dString message) {
  */
 dString getTargetPath(Targets target, unsigned int id) {
   return target.targets[id].path;
-}
-
-/**
- * Function: countSearchTermOccurrence
- * ----------------------------
- *   @brief loop through an array of needles to count their occurrences in a
- *      sentence.
- *
- *   @category Count Occurrences
- *
- *   @param needle      struct SearchTerm witch contains count of needles
- *                      and needles.
- *   @param haystack    sentence to be verified.
- *   @param flags       struct Flags witch contains the flags and properties.
- *
- *   @return will return the count of occurrences.
- */
-int countSearchTermOccurrence(SearchTerm needle, dString haystack,
-                              Flags flags) {
-  int count = 0;
-  dString buf = initString(haystack);
-
-  while (verifySearchTermPresence(needle, buf, flags)) {
-    count = count + 1;
-  }
-
-  freeString(buf);
-  return count;
-}
-
-/**
- * Function: verifySearchTermPresence
- * ----------------------------
- *   @brief loop through an array of needles to verify their presence in a
- *      sentence.
- *
- *   @category Grep
- *
- *   @param needle      struct SearchTerm witch contains count of needles
- *                      and needles.
- *   @param haystack    sentence to be verified.
- *   @param flags       struct Flags witch contains the flags and properties.
- *
- *   @return return 1 if the needles are present otherwise 0.
- */
-int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags) {
-  int testsPassed = 0;
-
-  for (unsigned int i = 0; i < needle.count; ++i) {
-    dString hasString =
-        (!getFlagStatus(flags, FLAG_CASE)
-             ? strstr(strToLower(haystack), strToLower(needle.terms[i]))
-             : strstr(haystack, needle.terms[i]));
-
-    if (hasString != NULL) {
-      testsPassed = testsPassed + 1;
-      strcpy(haystack, hasString + 1);
-    }
-  }
-
-  return testsPassed == needle.count;
 }

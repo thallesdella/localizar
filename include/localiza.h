@@ -5,9 +5,8 @@
 #ifndef LOCALIZA_LOCALIZA_H
 #define LOCALIZA_LOCALIZA_H
 
-#include "dstring.h"
 #include "flags.h"
-#include "structs.h"
+#include "helpers.h"
 #include "targets.h"
 
 #define FLAGS_COUNT 5

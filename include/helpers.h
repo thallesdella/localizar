@@ -6,17 +6,17 @@
 #define LOCALIZA_HELPERS_H
 
 #include "dstring.h"
-#include <stdio.h>
+#include "structs.h"
 
-typedef struct stat Stat;
-
-int newLinePosition(FILE *stream, long int start);
+int newLinePosition(void *stream, long int start);
 
 int isFile(dString path);
 
 int isDir(dString path);
 
 int randInt();
+
+void generateName(dString baseName);
 
 void printDebugMsg(dString msg);
 

@@ -3,10 +3,10 @@
 //
 
 #include "searchTerm.h"
-#include "dstring.h"
-#include "structs.h"
+#include "flags.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * Function: initSearchTerm
@@ -72,4 +72,65 @@ void removeSearchTermFromString(dString string, SearchTerm searchTerm) {
   for (int i = 0; i < searchTerm.count; ++i) {
     removeSubstr(string, searchTerm.terms[i]);
   }
+}
+
+/**
+ * Function: countSearchTermOccurrence
+ * ----------------------------
+ *   @brief loop through an array of needles to count their occurrences in a
+ *      sentence.
+ *
+ *   @category Count Occurrences
+ *
+ *   @param needle      struct SearchTerm witch contains count of needles
+ *                      and needles.
+ *   @param haystack    sentence to be verified.
+ *   @param flags       struct Flags witch contains the flags and properties.
+ *
+ *   @return will return the count of occurrences.
+ */
+int countSearchTermOccurrence(SearchTerm needle, dString haystack,
+                              Flags flags) {
+  int count = 0;
+  dString buf = initString(haystack);
+
+  while (verifySearchTermPresence(needle, buf, flags)) {
+    count = count + 1;
+  }
+
+  freeString(buf);
+  return count;
+}
+
+/**
+ * Function: verifySearchTermPresence
+ * ----------------------------
+ *   @brief loop through an array of needles to verify their presence in a
+ *      sentence.
+ *
+ *   @category Grep
+ *
+ *   @param needle      struct SearchTerm witch contains count of needles
+ *                      and needles.
+ *   @param haystack    sentence to be verified.
+ *   @param flags       struct Flags witch contains the flags and properties.
+ *
+ *   @return return 1 if the needles are present otherwise 0.
+ */
+int verifySearchTermPresence(SearchTerm needle, dString haystack, Flags flags) {
+  int testsPassed = 0;
+
+  for (unsigned int i = 0; i < needle.count; ++i) {
+    dString hasString =
+        (!getFlagStatus(flags, FLAG_CASE)
+             ? strstr(strToLower(haystack), strToLower(needle.terms[i]))
+             : strstr(haystack, needle.terms[i]));
+
+    if (hasString != NULL) {
+      testsPassed = testsPassed + 1;
+      strcpy(haystack, hasString + 1);
+    }
+  }
+
+  return testsPassed == needle.count;
 }

@@ -3,8 +3,6 @@
 //
 
 #include "flags.h"
-#include "dstring.h"
-#include "structs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

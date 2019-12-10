@@ -3,11 +3,9 @@
 //
 
 #include "localiza.h"
-#include "dstring.h"
+#include "file.h"
 #include "flags.h"
-#include "helpers.h"
 #include "searchTerm.h"
-#include "structs.h"
 #include "targets.h"
 #include <stdio.h>
 #include <stdlib.h>

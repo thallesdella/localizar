@@ -5,8 +5,7 @@
 #ifndef LOCALIZA_FLAGS_H
 #define LOCALIZA_FLAGS_H
 
-#include "dstring.h"
-#include "structs.h"
+#include "helpers.h"
 
 //#define FLAG_DEBUG 0
 #define FLAG_HELP 1
