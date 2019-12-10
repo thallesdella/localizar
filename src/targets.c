@@ -40,19 +40,28 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
     return r;
   }
 
-  dString buf = initString(NULL);
-  int count;
-  long int size = 0, oldPosition = 0;
-  long int newPosition = newLinePosition(targetFile, ftell(targetFile));
+  int line = 0;
+  while (!feof(targetFile)) {
+    line = line + 1;
 
-  for (int line = 1; newPosition != 0; ++line) {
-    size = newPosition - oldPosition;
-    buf = realloc(buf, size);
-    fread(buf, size, 1, targetFile);
+    unsigned int maxSize = 128;
+    dString buf = malloc(sizeof(char) * maxSize);
 
-    oldPosition = newPosition + 2;
-    fgetc(targetFile);
-    newPosition = newLinePosition(targetFile, oldPosition);
+    char ch = (char)getc(targetFile);
+    int count = 0;
+
+    while ((ch != '\n') && (ch != EOF)) {
+      if (count == maxSize) {
+        maxSize += 128;
+        buf = realloc(buf, sizeof(char) * maxSize);
+      }
+
+      buf[count] = ch;
+      count = count + 1;
+      ch = (char)getc(targetFile);
+    }
+
+    buf[count] = '\0';
 
     if ((count = countSearchTermOccurrence(needle, buf, flags)) > 0) {
       r[1] = r[1] + 1;
@@ -72,8 +81,8 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
         generateOutputFile(targetPath, cleanStr);
       }*/
     }
+    freeString(buf);
   }
-  freeString(buf);
   fclose(targetFile);
   return r;
 }
