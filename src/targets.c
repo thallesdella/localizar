@@ -3,6 +3,7 @@
 //
 
 #include "targets.h"
+#include "file.h"
 #include "flags.h"
 #include "searchTerm.h"
 #include <stdio.h>
@@ -116,11 +117,11 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
         }
       }
 
-      /*if (getFlagStatus(flags, FLAG_OUT)) {
+      if (getFlagStatus(flags, FLAG_OUT)) {
         dString cleanStr = initString(buf);
         removeSearchTermFromString(cleanStr, needle);
-        generateOutputFile(targetPath, cleanStr);
-      }*/
+        // generateOutputFile(targetPath, cleanStr);
+      }
     }
     freeString(buf);
   }

@@ -12,7 +12,7 @@
 #define FLAG_CASE 2
 #define FLAG_COUNT 3
 #define FLAG_NUMB 4
-//#define FLAG_OUT 5
+#define FLAG_OUT 5
 
 typedef int (*VecFlagsFunc)(dString);
 

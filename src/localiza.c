@@ -163,8 +163,9 @@ void garbageCollector() {
  */
 int main(int argc, dStringVector argv) {
   superGlobal.isDebug = 0;
-  VecFlagsFunc verifyFlags[FLAGS_COUNT] = {
-      flagDebug, flagHelp, flagCaseSensitive, flagCount, flagLineNumber};
+  VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagDebug,         flagHelp,
+                                           flagCaseSensitive, flagCount,
+                                           flagLineNumber,    flagOutput};
   options = malloc(sizeof(Option) * FLAGS_COUNT);
 
   initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
