@@ -31,18 +31,19 @@ void initSearchTerm(SearchTerm *searchTerm) {
  *   @category Search Term
  *
  *   @param searchTerm  pointer struct SearchTerm witch contains count of
- *                      needles and needles.
+ *                      needles and needles it self.
  *   @param term        term to be add to the SearchTerm struct.
  */
 void addSearchTerm(SearchTerm *searchTerm, dString term) {
-  searchTerm->count = countAppearances(term, "*") + 1;
+  int newSize = countAppearances(term, "*") + 1;
   searchTerm->terms =
-      realloc(searchTerm->terms, sizeof(dString) * searchTerm->count);
+      changeStringVectorSize(searchTerm->terms, searchTerm->count, newSize);
+  searchTerm->count = newSize;
 
   if (searchTerm->count > 1) {
     explode(term, "*", searchTerm->terms);
   } else {
-    searchTerm->terms[0] = initString(term);
+    alterString(searchTerm->terms[0], term);
   }
 
   if (superGlobal.isDebug == 1) {

@@ -102,6 +102,16 @@ dStringVector initStringVector(unsigned int size) {
   return buf;
 }
 
+dStringVector changeStringVectorSize(dStringVector vector, unsigned int oldSize,
+                                     unsigned int newSize) {
+  vector = realloc(vector, sizeof(dString) * newSize);
+
+  for (unsigned int i = oldSize; i < newSize; ++i) {
+    vector[i] = initString(NULL);
+  }
+  return vector;
+}
+
 /**
  * Function: copyStringVector
  * ----------------------------

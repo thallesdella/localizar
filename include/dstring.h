@@ -18,6 +18,9 @@ void freeString(dString string);
 
 dStringVector initStringVector(unsigned int size);
 
+dStringVector changeStringVectorSize(dStringVector vector, unsigned int oldSize,
+                                     unsigned int newSize);
+
 void copyStringVector(dStringVector vector, unsigned int size,
                       dStringVector content);
 
