@@ -50,7 +50,7 @@ void alterString(dString string, dString content) {
 }
 
 /**
- * Function: concatStr
+ * Function: concatStr *BUG
  * ----------------------------
  *   @brief concatenate numb strings to a string.
  *
@@ -58,20 +58,24 @@ void alterString(dString string, dString content) {
  *   @param numb    number of strings to concatenate.
  *   @param ...     strings to concatenate.
  */
-void concatStr(dString string, int numb, ...) {
-  va_list args;
-  size_t strLen = strlen(string);
+void concatStr(dString *string, int numb, ...) {
+  dString str = *(string);
+  va_list argsLen, args;
+  size_t strLen = strlen(str) + 1, newSize = strLen;
 
   va_start(args, numb);
-
+  va_copy(argsLen, args);
   for (int i = 0; i < numb; ++i) {
-    dString buf = initString(va_arg(args, dString));
-    string = realloc(string, sizeof(char) * (strlen(buf) + strLen + 1));
-    strcat(string, buf);
-    freeString(buf);
+    newSize = newSize + strlen(va_arg(argsLen, dString));
   }
 
+  str = realloc(str, sizeof(char) * newSize);
+
+  for (int i = 0; i < numb; ++i) {
+    strcat(str, va_arg(args, dString));
+  }
   va_end(args);
+  va_end(argsLen);
 }
 
 /**
