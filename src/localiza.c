@@ -17,6 +17,8 @@
  * ----------------------------
  *   @brief Loop through flags to see if they where enabled.
  *
+ *   @category params
+ *
  *   @param argc arguments count.
  *   @param argv arguments array.
  */
@@ -31,6 +33,8 @@ void getFlagsFromArg(int argc, dStringVector argv) {
  * ----------------------------
  *   @brief Retrieve from arguments the search term and pass to addTermSearch.
  *
+ *   @category params
+ *
  *   @param argv arguments array.
  */
 void getSearchTermFromArg(dStringVector argv) {
@@ -42,6 +46,8 @@ void getSearchTermFromArg(dStringVector argv) {
  * Function: getTargetsFromArg
  * ----------------------------
  *   @brief Obtain targets from arguments em pass to addTarget.
+ *
+ *   @category params
  *
  *   @param argc arguments count.
  *   @param argv arguments array.
@@ -62,6 +68,8 @@ void getTargetsFromArg(int argc, dStringVector argv) {
  * ----------------------------
  *   @brief responsible to call functions that handle arguments parse and
  *      construct theirs structs.
+ *
+ *   @category params
  *
  *   @param argc arguments count.
  *   @param argv arguments array.
@@ -86,6 +94,8 @@ void parseArguments(int argc, dStringVector argv) {
  * ----------------------------
  *   @brief loop through targets to scan the directory, or to perform a search
  *      in a file.
+ *
+ *   @category Grep
  */
 void grep(void) {
   for (unsigned int i = 0; i < targets.count; ++i) {
@@ -127,6 +137,8 @@ void grep(void) {
  * Function: garbageCollector
  * ----------------------------
  *   @brief Deallocate memory allocated during the execution of this script.
+ *
+ *   @category auxiliary
  */
 void garbageCollector() {
   free(options);
@@ -144,6 +156,8 @@ void garbageCollector() {
  * ----------------------------
  *   @brief entry point of this script.
  *
+ *   @category Main
+ *
  *   @param argc arguments count.
  *   @param argv arguments array.
  *
@@ -151,17 +165,13 @@ void garbageCollector() {
  */
 int main(int argc, dStringVector argv) {
   superGlobal.isDebug = 0;
-  VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagDebug,         flagHelp,
-                                           flagCaseSensitive, flagCount,
-                                           flagLineNumber,    flagOutput};
+  VecFlagsFunc verifyFlags[FLAGS_COUNT] = {
+      flagDebug, flagHelp, flagCaseSensitive, flagCount, flagLineNumber};
   options = malloc(sizeof(Option) * FLAGS_COUNT);
 
   initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
-  printDebugMsg(" -- Debug Mode On -- ");
-
   initSearchTerm(&searchTerm);
   initTargets(&targets);
-  printDebugMsg("[MAIN] Finish Init");
 
   parseArguments(argc, argv);
   printDebugMsg("[MAIN] Finish argument parse");

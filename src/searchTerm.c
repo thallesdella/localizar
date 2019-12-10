@@ -12,6 +12,8 @@
  * ----------------------------
  *   @brief Initiate SearchTerm struct.
  *
+ *   @category Search Term
+ *
  *   @param searchTerm pointer struct SearchTerm witch contains count of needles
  *                     and needles.
  */
@@ -24,6 +26,8 @@ void initSearchTerm(SearchTerm *searchTerm) {
  * Function: addSearchTerm
  * ----------------------------
  *   @brief Update de struct SearchTerm and add a new term to the struct.
+ *
+ *   @category Search Term
  *
  *   @param searchTerm  pointer struct SearchTerm witch contains count of
  *                      needles and needles.
@@ -50,6 +54,8 @@ void addSearchTerm(SearchTerm *searchTerm, dString term) {
  * Function: removeSearchTermFromLine
  * ----------------------------
  *   @brief remove the terms from a string.
+ *
+ *   @category Output File
  *
  *   @param string      line to be altered.
  *   @param searchTerm  struct SearchTerm witch contains count of needles

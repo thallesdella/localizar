@@ -6,7 +6,6 @@
 #include "dstring.h"
 #include "flags.h"
 #include "helpers.h"
-#include "searchTerm.h"
 #include "structs.h"
 #include <dirent.h>
 #include <stdio.h>
@@ -17,6 +16,8 @@
  * Function: searchInTarget
  * ----------------------------
  *   @brief Search for a needle in a target file.
+ *
+ *   @category Grep
  *
  *   @param needle      struct SearchTerm witch contains count of needles
  *                      and needles.
@@ -65,11 +66,11 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
         }
       }
 
-      if (getFlagStatus(flags, FLAG_OUT)) {
+      /*if (getFlagStatus(flags, FLAG_OUT)) {
         dString cleanStr = initString(buf);
         removeSearchTermFromString(cleanStr, needle);
         generateOutputFile(targetPath, cleanStr);
-      }
+      }*/
     }
   }
   freeString(buf);
@@ -81,6 +82,8 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
  * Function: scanDir
  * ----------------------------
  *   @brief Search crawl a directory for files and directories.
+ *
+ *   @category Grep
  *
  *   @param target  struct Targets witch contains targets information.
  *   @param path    path to the directory.
@@ -118,6 +121,8 @@ void scanDir(Targets *target, dString path) {
  * ----------------------------
  *   @brief Initiate targets struct.
  *
+ *   @category Target
+ *
  *   @param target  struct Targets witch contains targets information.
  */
 void initTargets(Targets *targets) {
@@ -131,6 +136,8 @@ void initTargets(Targets *targets) {
  * Function: addTarget
  * ----------------------------
  *   @brief Update de struct targets and add a new target to the struct.
+ *
+ *   @category Target
  *
  *   @param target      struct Targets witch contains targets information.
  *   @param targetPath  path to the file.
@@ -164,6 +171,8 @@ void addTarget(Targets *targets, dString targetPath) {
  * ----------------------------
  *   @brief Generate an output file.
  *
+ *   @category Output File
+ *
  *   @param name    name of the file to generate.
  *   @param content content to append to file.
  */
@@ -187,6 +196,8 @@ void generateOutputFile(dString name, dString content) {
  * ----------------------------
  *   @brief Generate a new name adding random number to the end of the
  *      files's name.
+ *
+ *   @category Output File
  *
  *   @param baseName name to be altered.
  */
@@ -220,6 +231,8 @@ void generateName(dString baseName) {
  * ----------------------------
  *   @brief print a message for a specific file.
  *
+ *   @category Target
+ *
  *   @param target  struct Targets witch contains targets information.
  *   @param id      position of target in array.
  *   @param message message to display.
@@ -232,6 +245,8 @@ void printMsgForFile(Targets target, unsigned int id, dString message) {
  * Function: getTargetPath
  * ----------------------------
  *   @brief Get the path for target's file.
+ *
+ *   @category Target
  *
  *   @param target  struct Targets witch contains targets information.
  *   @param id      position of target in array.
@@ -247,6 +262,8 @@ dString getTargetPath(Targets target, unsigned int id) {
  * ----------------------------
  *   @brief loop through an array of needles to count their occurrences in a
  *      sentence.
+ *
+ *   @category Count Occurrences
  *
  *   @param needle      struct SearchTerm witch contains count of needles
  *                      and needles.
@@ -273,6 +290,8 @@ int countSearchTermOccurrence(SearchTerm needle, dString haystack,
  * ----------------------------
  *   @brief loop through an array of needles to verify their presence in a
  *      sentence.
+ *
+ *   @category Grep
  *
  *   @param needle      struct SearchTerm witch contains count of needles
  *                      and needles.
