@@ -6,7 +6,7 @@
 #define LOCALIZA_DSTRING_H
 
 typedef char *dString;
-typedef char **dStringVector;
+typedef dString *dStringVector;
 
 dString initString(dString content);
 

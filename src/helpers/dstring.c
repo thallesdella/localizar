@@ -253,7 +253,7 @@ void intToStr(dString string, int numb) {
     string = realloc(string, bufLen + 1);
   }
 
-  memcpy(string, buf, bufLen + 1);
+  strcpy(string, buf);
   freeString(buf);
 }
 

@@ -249,6 +249,7 @@ int flagLineNumber(dString arg) {
  */
 int flagOutput(dString arg) {
   if (strcmp(arg, "-d") == 0 || strcmp(arg, "--out") == 0) {
+    superGlobal.needOutputName = 1;
     return 1;
   }
   return 0;

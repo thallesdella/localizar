@@ -50,7 +50,7 @@ int randInt() {
  *
  *   @param baseName name to be altered.
  */
-void generateName(dString baseName) {
+dString generateName(dString baseName) {
   dString buf = initString(baseName);
   int count = countAppearances(buf, ".");
 
@@ -59,20 +59,18 @@ void generateName(dString baseName) {
   intToStr(rand[1], randInt());
 
   if (count == 0) {
-    baseName = concatStr(baseName, 3, "_", rand[0], rand[1]);
-    return;
+    buf = concatStr(buf, 3, "_", rand[0], rand[1]);
+    return buf;
   }
 
   dStringVector bufVec = initStringVector(count);
   explode(buf, ".", bufVec);
 
   bufVec[count - 1] = concatStr(bufVec[count - 1], 3, "_", rand[0], rand[1]);
-
   implode(bufVec, count, ".", buf);
-  alterString(baseName, buf);
 
   freeStringVector(bufVec, count);
-  freeString(buf);
+  return buf;
 }
 
 /**

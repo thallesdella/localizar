@@ -30,6 +30,7 @@ typedef struct Target {
   unsigned int hotLines;
   unsigned int occurrences;
   dString path;
+  dString outputPath;
 } Target;
 
 typedef struct Targets {
@@ -40,7 +41,7 @@ typedef struct Targets {
 } Targets;
 
 typedef struct SuperGlobal {
-  // int (*isDebug)(void);
+  int needOutputName;
   int isDebug;
 } SuperGlobal;
 

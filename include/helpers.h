@@ -16,8 +16,8 @@ int isDir(dString path);
 
 int randInt();
 
-void generateName(dString baseName);
-
 void printDebugMsg(dString msg);
+
+dString generateName(dString baseName);
 
 #endif // LOCALIZA_HELPERS_H

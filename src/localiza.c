@@ -144,7 +144,11 @@ void garbageCollector() {
   freeStringVector(searchTerm.terms, searchTerm.count);
 
   for (unsigned int i = 0; i < targets.count; ++i) {
-    free(getTargetPath(targets, i));
+    freeString(getTargetPath(targets, i));
+
+    if (superGlobal.needOutputName && targets.targets[i].isFile) {
+      freeString(targets.targets[i].outputPath);
+    }
   }
   free(targets.targets);
 }
@@ -163,6 +167,8 @@ void garbageCollector() {
  */
 int main(int argc, dStringVector argv) {
   superGlobal.isDebug = 0;
+  superGlobal.needOutputName = 0;
+
   VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagDebug,         flagHelp,
                                            flagCaseSensitive, flagCount,
                                            flagLineNumber,    flagOutput};
