@@ -85,6 +85,7 @@ void parseArguments(int argc, dStringVector argv) {
 
   getSearchTermFromArg(argv);
   getTargetsFromArg(argc, argv);
+  printDebugMsg("[MAIN] Finish parsing arguments.");
 }
 
 /**
@@ -96,6 +97,7 @@ void parseArguments(int argc, dStringVector argv) {
  *   @category Grep
  */
 void grep(void) {
+  printDebugMsg("[MAIN] Start grep...");
   for (unsigned int i = 0; i < targets.count; ++i) {
     if (targets.targets[i].isDir) {
       scanDir(&targets, getTargetPath(targets, i));
@@ -128,6 +130,25 @@ void grep(void) {
       }
     }
   }
+
+  if (getFlagStatus(flags, FLAG_COUNT) == 1) {
+    displayFlagCount(targets);
+  }
+  printDebugMsg("[MAIN] Finish grep.");
+}
+
+/**
+ * Function: checkConflicts
+ * ----------------------------
+ *   @brief Check to see if there is any conflicts between flags.
+ */
+void checkConflicts() {
+  printDebugMsg("[MAIN] Checking conflicts");
+  if (getFlagStatus(flags, FLAG_OUT) && searchTerm.count > 1) {
+    // updateFlagStatus(&flags, FLAG_OUT, 0);
+    printf(
+        "Warning: Generating an Output file only works with common search.\n");
+  }
 }
 
 /**
@@ -138,6 +159,7 @@ void grep(void) {
  *   @category auxiliary
  */
 void garbageCollector() {
+  printDebugMsg("[MAIN] Cleaning the dirt...");
   free(options);
 
   freeStringVector(searchTerm.terms, searchTerm.count);
@@ -147,6 +169,7 @@ void garbageCollector() {
     freeString(targets.targets[i].outputPath);
   }
   free(targets.targets);
+  printDebugMsg("[MAIN] Finish cleaning the dirt.");
 }
 
 /**
@@ -175,17 +198,9 @@ int main(int argc, dStringVector argv) {
   initTargets(&targets);
 
   parseArguments(argc, argv);
-  printDebugMsg("[MAIN] Finish argument parse");
 
   grep();
 
-  if (getFlagStatus(flags, FLAG_COUNT) == 1) {
-    displayFlagCount(targets);
-  }
-  printDebugMsg("[MAIN] Finish grep");
-
   garbageCollector();
-  printDebugMsg("[MAIN] Cleaning the dirt");
-
   return 0;
 }
