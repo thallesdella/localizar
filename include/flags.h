@@ -26,6 +26,8 @@ void displayFlagCount(Targets target);
 void checkFlagsExistence(Flags *flags, Option *option, int argc,
                          dStringVector argv);
 
+void updateFlagStatus(Flags *flags, unsigned int id, int status);
+
 int getFlagStatus(Flags flags, int id);
 
 int flagDebug(dString arg);

@@ -24,6 +24,8 @@ void getTargetsFromArg(int argc, dStringVector argv);
 
 void parseArguments(int argc, dStringVector argv);
 
+void checkConflicts();
+
 void grep(void);
 
 void garbageCollector(void);

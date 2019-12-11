@@ -44,16 +44,16 @@ void initFlags(Flags *flags, Option *option, VecFlagsFunc *func,
  */
 void displayFlagHelp(dString scriptName, int exitCode) {
   printf("-- USAGE --\n");
-  printf("\t./%s [null|flags...] [pattern] [file|dir...]\n", scriptName);
+  printf("\t./%s [OPTION]... PATTERN [FILE|DIRECTORY]...\n", scriptName);
   printf("\t./%s jesus bible.txt all-bibles-in-the-world\n\n", scriptName);
-  printf("-- FLAGS --\n");
+  printf("-- OPTIONS --\n");
   printf("\t-h --help\t - Display help\n");
   printf("\t-i --case\t - Case sensitive search disable\n");
   printf("\t-c --count\t - Display count of lines with has appearances of the "
          "pattern\n");
   // printf("\t-o --time\t - Display occurrences os the pattern in the file\n");
   printf("\t-n --numb\t - Display line number witch contains the pattern \n");
-  // printf("\t-d --out\t - Save an output copy without the pattern\n");
+  printf("\t-d --out\t - Save an output copy without the pattern\n");
 
   exit(exitCode);
 }
@@ -110,6 +110,32 @@ void checkFlagsExistence(Flags *flags, Option *option, int argc,
       return;
     }
   }
+}
+
+/**
+ * Function: updateFlagStatus
+ * ----------------------------
+ *   @brief update flag status.
+ *
+ *   @param flags   pointer to struct Flags witch contains information of all
+ *                  flags and others.
+ *   @param id      position of flag in array.
+ *   @param status  status of the flag.
+ */
+void updateFlagStatus(Flags *flags, unsigned int id, int status) {
+  flags->flags[id].status = status;
+
+  // dString msg = malloc(sizeof(char) * (strlen(getFlagName(*flags, id)) +
+  // 21));
+  if (status == 1) {
+    flags->active = flags->active + 1;
+    // sprintf(msg, "[FLAGS] %s activated", getFlagName(*flags, id));
+  } else {
+    flags->active = flags->active - 1;
+    // sprintf(msg, "[FLAGS] %s deactivated", getFlagName(*flags, id));
+  }
+  // printDebugMsg(msg);
+  // freeString(msg);
 }
 
 /**

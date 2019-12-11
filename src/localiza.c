@@ -89,6 +89,20 @@ void parseArguments(int argc, dStringVector argv) {
 }
 
 /**
+ * Function: checkConflicts
+ * ----------------------------
+ *   @brief Check to see if there is any conflicts between flags.
+ */
+void checkConflicts() {
+  printDebugMsg("[MAIN] Checking conflicts");
+  if (getFlagStatus(flags, FLAG_OUT) && searchTerm.count > 1) {
+    updateFlagStatus(&flags, FLAG_OUT, 0);
+    printf(
+        "Warning: Generating an Output file only works with common search.\n");
+  }
+}
+
+/**
  * Function: grep
  * ----------------------------
  *   @brief loop through targets to scan the directory, or to perform a search
@@ -138,20 +152,6 @@ void grep(void) {
 }
 
 /**
- * Function: checkConflicts
- * ----------------------------
- *   @brief Check to see if there is any conflicts between flags.
- */
-void checkConflicts() {
-  printDebugMsg("[MAIN] Checking conflicts");
-  if (getFlagStatus(flags, FLAG_OUT) && searchTerm.count > 1) {
-    // updateFlagStatus(&flags, FLAG_OUT, 0);
-    printf(
-        "Warning: Generating an Output file only works with common search.\n");
-  }
-}
-
-/**
  * Function: garbageCollector
  * ----------------------------
  *   @brief Deallocate memory allocated during the execution of this script.
@@ -198,6 +198,7 @@ int main(int argc, dStringVector argv) {
   initTargets(&targets);
 
   parseArguments(argc, argv);
+  checkConflicts();
 
   grep();
 
