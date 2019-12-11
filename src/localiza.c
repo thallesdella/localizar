@@ -144,10 +144,7 @@ void garbageCollector() {
 
   for (unsigned int i = 0; i < targets.count; ++i) {
     freeString(getTargetPath(targets, i));
-
-    if (superGlobal.needOutputName && targets.targets[i].isFile) {
-      freeString(targets.targets[i].outputPath);
-    }
+    freeString(targets.targets[i].outputPath);
   }
   free(targets.targets);
 }
