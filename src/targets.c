@@ -125,10 +125,14 @@ int *searchInTarget(SearchTerm needle, File target, Flags flags) {
 
       if (getFlagStatus(flags, FLAG_OUT)) {
         removeSearchTermFromString(buf, needle);
-        buf = concatStr(buf, 1, "\n");
-        generateOutputFile(target.outputPath, buf);
       }
     }
+
+    if (getFlagStatus(flags, FLAG_OUT)) {
+      buf = concatStr(buf, 1, "\n");
+      generateOutputFile(target.outputPath, buf);
+    }
+
     freeString(buf);
   }
   fclose(targetFile);
