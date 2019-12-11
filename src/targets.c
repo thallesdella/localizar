@@ -22,7 +22,7 @@ void initTargets(Targets *targets) {
   targets->count = 0;
   targets->totalHotLines = 0;
   targets->totalOccurrences = 0;
-  targets->targets = malloc(sizeof(Target));
+  targets->targets = malloc(sizeof(File));
 }
 
 /**
@@ -38,9 +38,9 @@ void initTargets(Targets *targets) {
 void addTarget(Targets *targets, dString targetPath) {
   unsigned int id = targets->count;
   targets->count = targets->count + 1;
-  targets->targets = realloc(targets->targets, sizeof(Target) * targets->count);
+  targets->targets = realloc(targets->targets, sizeof(File) * targets->count);
 
-  Target *target = &targets->targets[id];
+  File *target = &targets->targets[id];
   target->occurrences = 0;
   target->hotLines = 0;
   target->isFile = isFile(targetPath);
@@ -75,7 +75,7 @@ void addTarget(Targets *targets, dString targetPath) {
  *   @returns:  array of int that indicates error status, hotLines
  *              and occurrences.
  */
-int *searchInTarget(SearchTerm needle, Target target, Flags flags) {
+int *searchInTarget(SearchTerm needle, File target, Flags flags) {
   FILE *targetFile = fopen(target.path, "r");
   int *r = malloc(sizeof(int) * 3);
   r[0] = 0;

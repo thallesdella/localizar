@@ -5,7 +5,6 @@
 #ifndef LOCALIZA_HELPERS_H
 #define LOCALIZA_HELPERS_H
 
-#include "dstring.h"
 #include "structs.h"
 
 int newLinePosition(void *stream, long int start);

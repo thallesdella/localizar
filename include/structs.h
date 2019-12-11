@@ -9,6 +9,7 @@
 
 typedef struct Option {
   int status;
+  dString name;
 
   int (*verify)(dString str);
 } Option;
@@ -24,22 +25,22 @@ typedef struct SearchTerm {
   dStringVector terms;
 } SearchTerm;
 
-typedef struct Target {
+typedef struct File {
   int isFile;
   int isDir;
-  unsigned int hotLines;
-  unsigned int occurrences;
   dString ext;
   dString name;
   dString path;
   dString outputPath;
-} Target;
+  unsigned int hotLines;
+  unsigned int occurrences;
+} File;
 
 typedef struct Targets {
   unsigned int count;
   unsigned int totalHotLines;
   unsigned int totalOccurrences;
-  Target *targets;
+  File *targets;
 } Targets;
 
 typedef struct SuperGlobal {

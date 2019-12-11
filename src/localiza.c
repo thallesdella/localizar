@@ -22,7 +22,7 @@
  */
 void getFlagsFromArg(int argc, dStringVector argv) {
   for (unsigned int i = 0; i < flags.count; ++i) {
-    checkFlagsExistence(&flags, &flags.flags[i], argc, argv);
+    checkFlagsExistence(&flags, i, argc, argv);
   }
 }
 
@@ -191,9 +191,15 @@ int main(int argc, dStringVector argv) {
   VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagDebug,         flagHelp,
                                            flagCaseSensitive, flagCount,
                                            flagLineNumber,    flagOutput};
+  dString names[FLAGS_COUNT] = {"Debug",
+                                "Help",
+                                "Case Sensitive",
+                                "Count Hot Lines",
+                                "Show Line Number",
+                                "Generate Output"};
   options = malloc(sizeof(Option) * FLAGS_COUNT);
 
-  initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
+  initFlags(&flags, options, names, verifyFlags, FLAGS_COUNT);
   initSearchTerm(&searchTerm);
   initTargets(&targets);
 

@@ -20,10 +20,11 @@
  *   @param func        array of pointers to verify function.
  *   @param flagsCount  count of flags.
  */
-void initFlags(Flags *flags, Option *option, VecFlagsFunc *func,
-               int flagsCount) {
+void initFlags(Flags *flags, Option *option, dStringVector name,
+               VecFlagsFunc *func, int flagsCount) {
   for (int i = 0; i < flagsCount; ++i) {
     option[i].status = 0;
+    option[i].name = initString(name[i]);
     option[i].verify = func[i];
   }
 
@@ -96,17 +97,11 @@ void displayFlagCount(Targets target) {
  *   @param argc    argc arguments count.
  *   @param argv    arguments array.
  */
-void checkFlagsExistence(Flags *flags, Option *option, int argc,
+void checkFlagsExistence(Flags *flags, unsigned int id, int argc,
                          dStringVector argv) {
   for (int i = 1; i < argc; ++i) {
-    if (option->verify(argv[i])) {
-      option->status = 1;
-
-      flags->active = flags->active + 1;
-
-      if (superGlobal.isDebug == 1) {
-        printf("[FLAGS] %s status:active\n", argv[i]);
-      }
+    if (flags->flags[id].verify(argv[i])) {
+      updateFlagStatus(flags, id, 1);
       return;
     }
   }
@@ -125,17 +120,31 @@ void checkFlagsExistence(Flags *flags, Option *option, int argc,
 void updateFlagStatus(Flags *flags, unsigned int id, int status) {
   flags->flags[id].status = status;
 
-  // dString msg = malloc(sizeof(char) * (strlen(getFlagName(*flags, id)) +
-  // 21));
+  dString msg = malloc(sizeof(char) * (strlen(getFlagName(*flags, id)) + 21));
   if (status == 1) {
     flags->active = flags->active + 1;
-    // sprintf(msg, "[FLAGS] %s activated", getFlagName(*flags, id));
+    sprintf(msg, "[FLAGS] %s activated", getFlagName(*flags, id));
   } else {
     flags->active = flags->active - 1;
-    // sprintf(msg, "[FLAGS] %s deactivated", getFlagName(*flags, id));
+    sprintf(msg, "[FLAGS] %s deactivated", getFlagName(*flags, id));
   }
-  // printDebugMsg(msg);
-  // freeString(msg);
+  printDebugMsg(msg);
+  freeString(msg);
+}
+
+/**
+ * Function: getFlagName
+ * ----------------------------
+ *   @brief return the name of the flag for the id given.
+ *
+ *   @param flags   struct Flags witch contains information of all flags and
+ *                  others.
+ *   @param id      position of flag in array.
+ *
+ *   @return name of the flag.
+ */
+dString getFlagName(Flags flags, unsigned int id) {
+  return flags.flags[id].name;
 }
 
 /**

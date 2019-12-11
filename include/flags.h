@@ -16,17 +16,19 @@
 
 typedef int (*VecFlagsFunc)(dString);
 
-void initFlags(Flags *flags, Option *option, VecFlagsFunc *func,
-               int flagsCount);
+void initFlags(Flags *flags, Option *option, dStringVector name,
+               VecFlagsFunc *func, int flagsCount);
 
 void displayFlagHelp(dString scriptName, int exitCode);
 
 void displayFlagCount(Targets target);
 
-void checkFlagsExistence(Flags *flags, Option *option, int argc,
+void checkFlagsExistence(Flags *flags, unsigned int id, int argc,
                          dStringVector argv);
 
 void updateFlagStatus(Flags *flags, unsigned int id, int status);
+
+dString getFlagName(Flags flags, unsigned int id);
 
 int getFlagStatus(Flags flags, int id);
 
