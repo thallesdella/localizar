@@ -5,9 +5,8 @@
 #ifndef LOCALIZA_LOCALIZA_H
 #define LOCALIZA_LOCALIZA_H
 
-#include "dstring.h"
 #include "flags.h"
-#include "structs.h"
+#include "helpers.h"
 #include "targets.h"
 
 #define FLAGS_COUNT 7
@@ -24,6 +23,8 @@ void getSearchTermFromArg(dStringVector argv);
 void getTargetsFromArg(int argc, dStringVector argv);
 
 void parseArguments(int argc, dStringVector argv);
+
+void checkConflicts();
 
 void grep(void);
 

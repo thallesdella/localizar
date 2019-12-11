@@ -6,4 +6,4 @@ set(CMAKE_C_STANDARD 99)
 include_directories(include)
 file(GLOB SOURCES src/*.c src/helpers/*.c)
 
-add_executable(localiza ${SOURCES})
+add_executable(localiza ${SOURCES} src/file.c)

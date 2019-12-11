@@ -27,7 +27,7 @@ dString initString(dString content) {
 
   size_t len = strlen(content) + 1;
   dString buf = malloc(sizeof(char) * len);
-  strcpy(buf, content);
+  memcpy(buf, content, len);
   return buf;
 }
 
@@ -42,14 +42,15 @@ dString initString(dString content) {
 void alterString(dString string, dString content) {
   size_t oldLen = strlen(string) + 1, newLen = strlen(content) + 1;
 
-  if ((newLen + 16) < oldLen || newLen > oldLen) {
+  if (newLen > oldLen || newLen <= (oldLen - 16)) {
     string = realloc(string, sizeof(char) * newLen);
   }
-  strcpy(string, content);
+
+  memcpy(string, content, newLen);
 }
 
 /**
- * Function: concatStr *BUG
+ * Function: concatStr
  * ----------------------------
  *   @brief concatenate numb strings to a string.
  *
@@ -57,9 +58,9 @@ void alterString(dString string, dString content) {
  *   @param numb    number of strings to concatenate.
  *   @param ...     strings to concatenate.
  */
-void concatStr(dString *string, int numb, ...) {
+dString concatStr(dString string, int numb, ...) {
   va_list argsLen, args;
-  size_t strLen = strlen(*string) + 1, newSize = strLen;
+  size_t strLen = strlen(string) + 1, newSize = strLen;
 
   va_start(args, numb);
   va_copy(argsLen, args);
@@ -67,13 +68,14 @@ void concatStr(dString *string, int numb, ...) {
     newSize = newSize + strlen(va_arg(argsLen, dString));
   }
 
-  *string = realloc(*string, sizeof(char) * newSize);
+  string = realloc(string, sizeof(char) * newSize);
 
   for (int i = 0; i < numb; ++i) {
-    strcat(*string, va_arg(args, dString));
+    strcat(string, va_arg(args, dString));
   }
-
   va_end(args);
+  va_end(argsLen);
+  return string;
 }
 
 /**
@@ -104,13 +106,39 @@ dStringVector initStringVector(unsigned int size) {
   return buf;
 }
 
-void changeStringVectorSize(dStringVector vector, unsigned int oldSize,
-                            unsigned int newSize) {
+/**
+ * Function: changeStringVectorSize *BUG?
+ * ----------------------------
+ *   @brief change vector of strings`s size.
+ *
+ *   @param vector vector to be changed
+ *   @param oldSize old size of vector.
+ *   @param newSize new size of vector.
+ *
+ *   @return return a pointer to a vector of strings.
+ */
+dStringVector changeStringVectorSize(dStringVector vector, unsigned int oldSize,
+                                     unsigned int newSize) {
+  if (oldSize == newSize) {
+    return vector;
+  }
+
+  if (oldSize > newSize) {
+    for (unsigned int i = oldSize; i > newSize; --i) {
+      printf("removing - position:%u\n", i);
+      free(vector[i]);
+    }
+  }
+
   vector = realloc(vector, sizeof(dString) * newSize);
 
-  for (unsigned int i = oldSize; i < newSize; ++i) {
-    vector[i] = initString(NULL);
+  if (newSize > oldSize) {
+    for (unsigned int i = oldSize; i < newSize; ++i) {
+      printf("adding - position:%u\n", i);
+      vector[i] = initString(NULL);
+    }
   }
+  return vector;
 }
 
 /**
@@ -200,11 +228,12 @@ void applyFuncToStrings(dStringVector vector, unsigned int size,
  *   @param string target string.
  *   @param remove position of target in array.
  */
-void removeSubstr(dString string, dString remove) {
+dString removeSubstr(dString string, dString remove) {
   size_t length = strlen(remove);
   while ((string = strstr(string, remove))) {
     memmove(string, string + length, 1 + strlen(string + length));
   }
+  return string;
 }
 
 /**
@@ -215,14 +244,16 @@ void removeSubstr(dString string, dString remove) {
  *   @param string  target string.
  *   @param numb    int to be converted.
  */
-void intToStr(dString string, unsigned int numb) {
+void intToStr(dString string, int numb) {
   dString buf = malloc(sizeof(int) * 8 + 1);
   sprintf(buf, "%d", numb);
 
   size_t bufLen = strlen(buf) + 1;
-  string = realloc(string, bufLen);
+  if (bufLen > (strlen(string) + 1)) {
+    string = realloc(string, bufLen + 1);
+  }
 
-  memcpy(string, buf, bufLen);
+  strcpy(string, buf);
   freeString(buf);
 }
 
@@ -258,14 +289,14 @@ int countAppearances(dString string, dString token) {
  *   @param result      buffer for vector of strings.
  */
 void explode(dString string, dString delimiter, dStringVector result) {
-  dString tok = strtok(string, delimiter);
-  int i = 0, count = countAppearances(string, delimiter);
+  dString tok;
+  int i = 0;
 
-  result = realloc(result, sizeof(dString) * (count + 1));
-
-  for (i; tok != NULL; ++i) {
-    alterString(result[i], tok);
+  tok = strtok(string, delimiter);
+  while (tok != NULL) {
+    result[i] = initString(tok);
     tok = strtok(NULL, delimiter);
+    i = i + 1;
   }
 }
 
@@ -281,29 +312,8 @@ void explode(dString string, dString delimiter, dStringVector result) {
  */
 void implode(dStringVector vector, unsigned int size, dString glue,
              dString result) {
-  size_t newLen = 0, glueLen = strlen(glue);
-
-  for (unsigned int i = 0; i <= size; ++i) {
-    newLen = newLen + strlen(vector[i]);
-    if ((i + 1) < size) {
-      newLen = newLen + glueLen;
-    } else {
-      newLen = newLen + 1;
-    }
-  }
-
-  result = realloc(result, sizeof(char) * newLen);
-
-  for (unsigned int i = 0; i <= size; ++i) {
-
-    if (i == 0) {
-      strcpy(result, vector[0]);
-      strcat(result, glue);
-      continue;
-    }
-
+  for (unsigned int i = 0; i < size; ++i) {
     strcat(result, vector[i]);
-
     if ((i + 1) < size) {
       strcat(result, glue);
     }

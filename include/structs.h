@@ -8,7 +8,6 @@
 #include "dstring.h"
 
 typedef struct Option {
-  dString name;
   int status;
 
   int (*verify)(dString str);
@@ -30,7 +29,10 @@ typedef struct Target {
   int isDir;
   unsigned int hotLines;
   unsigned int occurrences;
+  dString ext;
+  dString name;
   dString path;
+  dString outputPath;
 } Target;
 
 typedef struct Targets {
@@ -41,7 +43,7 @@ typedef struct Targets {
 } Targets;
 
 typedef struct SuperGlobal {
-  // int (*isDebug)(void);
+  int needOutputName;
   int isDebug;
 } SuperGlobal;
 

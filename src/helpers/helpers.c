@@ -3,11 +3,10 @@
 //
 
 #include "helpers.h"
-#include "dstring.h"
-#include "structs.h"
+#include "file.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
+#include <string.h>
 #include <time.h>
 
 /**
@@ -15,73 +14,20 @@
  * ----------------------------
  *   @brief find the next end of the line.
  *
- *   @param stream file stream.
+ *   @param stream pointer to a file stream.
  *   @param start position of file's start.
  *
  *   @return new line char position.
  */
-int newLinePosition(FILE *stream, long int start) {
+int newLinePosition(void *stream, long int start) {
+  FILE *file = (FILE *)stream;
   int c = 0, i = 0;
-  while (c != '\n' && c != EOF) {
-    i = ftell(stream);
-    c = fgetc(stream);
+  while (c != '\n' && !feof(file)) {
+    i = ftell(file);
+    c = fgetc(file);
   }
-  fseek(stream, start, SEEK_SET);
-  return i + 1;
-}
-
-/**
- * Function: fileExists
- * ----------------------------
- *   @brief verify if file exists.
- *
- *   @param path path to file.
- *
- *   @return 1 for true and 0 for false.
- */
-int fileExists(dString path) {
-  Stat statBuf;
-  if (stat(path, &statBuf) == 0) {
-    return 1;
-  }
-  return 0;
-}
-
-/**
- * Function: isFile
- * ----------------------------
- *   @brief verify if is file.
- *
- *   @param path path to file.
- *
- *   @return 1 for true and 0 for false.
- */
-int isFile(dString path) {
-  Stat statBuf;
-  stat(path, &statBuf);
-
-  if (stat(path, &statBuf) == 0) {
-    return S_ISREG(statBuf.st_mode);
-  }
-  return 0;
-}
-
-/**
- * Function: isDir
- * ----------------------------
- *   @brief verify if is directory.
- *
- *   @param path path to file.
- *
- *   @return 1 for true and 0 for false.
- */
-int isDir(dString path) {
-  Stat statBuf;
-
-  if (stat(path, &statBuf) == 0) {
-    return S_ISDIR(statBuf.st_mode);
-  }
-  return 0;
+  fseek(file, start, SEEK_SET);
+  return i;
 }
 
 /**
@@ -103,7 +49,7 @@ unsigned int randInt(unsigned int max, unsigned int min) {
 /**
  * Function: printDebugMsg
  * ----------------------------
- *   @brief print debug message.
+ *   @brief print debug message
  *
  *   @param msg message to be displayed.
  */
@@ -111,4 +57,21 @@ void printDebugMsg(dString msg) {
   if (superGlobal.isDebug == 1) {
     printf("%s\n", msg);
   }
+}
+
+/**
+ * Function: generateName
+ * ----------------------------
+ *   @brief Generate a new name adding random number to the end of the
+ *      files's name.
+ *
+ *   @category Output File
+ *
+ *   @param baseName name to be altered.
+ */
+dString generateName(dString baseName, dString ext) {
+  dString buf = malloc(sizeof(char) * (strlen(baseName) + strlen(ext) + 11));
+  sprintf(buf, "%s_%d%d.%s", baseName, randInt(9999, 1000), randInt(9999, 1000),
+          ext);
+  return buf;
 }
