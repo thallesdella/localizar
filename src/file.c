@@ -81,6 +81,34 @@ void printMsgForFile(Targets target, unsigned int id, dString message) {
 }
 
 /**
+ * Function: getFileExtension
+ * ----------------------------
+ *   @brief
+ *
+ *   @category File
+ *
+ *   @param filename
+ *
+ *   @return
+ */
+dString getFileExtension(dString filename) {
+  dString ext = strrchr(filename, '.');
+  if (!ext || ext == filename) {
+    return NULL;
+  }
+  return ext + 1;
+}
+
+dString getFileName(dString filename) {
+  dString ext = strrchr(filename, '.');
+  if (!ext || ext == filename) {
+    return filename;
+  }
+  *ext = '\0';
+  return filename;
+}
+
+/**
  * Function: fileExists
  * ----------------------------
  *   @brief Verify if file exists.

@@ -46,9 +46,13 @@ void addTarget(Targets *targets, dString targetPath) {
   target->isFile = isFile(targetPath);
   target->isDir = isDir(targetPath);
   target->path = initString(targetPath);
+  target->ext = getFileExtension(targetPath);
+  target->name = getFileName(targetPath);
   /*target->outputPath =
       (superGlobal.needOutputName && target->isFile ? generateName(target->path)
                                                     : NULL);*/
+  printf("file extension:%s\n", target->ext);
+  printf("file name:%s\n", target->name);
 
   if (superGlobal.isDebug == 1) {
     printf("[ADD_TARGET] %s - out:%s isFile:%d isDir:%d hotLines:%d "
@@ -73,15 +77,15 @@ void addTarget(Targets *targets, dString targetPath) {
  *   @returns:  array of int that indicates error status, hotLines
  *              and occurrences.
  */
-int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
-  FILE *targetFile = fopen(targetPath, "r");
+int *searchInTarget(SearchTerm needle, Target target, Flags flags) {
+  FILE *targetFile = fopen(target.path, "r");
   int *r = malloc(sizeof(int) * 3);
   r[0] = 0;
   r[1] = 0;
   r[2] = 0;
 
   if (targetFile == NULL) {
-    printf("%s:File not found", targetPath);
+    printf("%s:File not found", target.path);
     r[1] = 1;
     return r;
   }
@@ -115,16 +119,16 @@ int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags) {
 
       if (getFlagStatus(flags, FLAG_COUNT) == 0) {
         if (getFlagStatus(flags, FLAG_NUMB)) {
-          printf("%s:%d:%s\n", targetPath, line, buf);
+          printf("%s:%d:%s\n", target.path, line, buf);
         } else {
-          printf("%s:%s\n", targetPath, buf);
+          printf("%s:%s\n", target.path, buf);
         }
       }
 
       if (getFlagStatus(flags, FLAG_OUT)) {
         removeSearchTermFromString(buf, needle);
         buf = concatStr(buf, 1, "\n");
-        generateOutputFile("aaa.txt", buf);
+        generateOutputFile(target.outputPath, buf);
       }
     }
     freeString(buf);

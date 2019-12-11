@@ -29,6 +29,8 @@ typedef struct Target {
   int isDir;
   unsigned int hotLines;
   unsigned int occurrences;
+  dString ext;
+  dString name;
   dString path;
   dString outputPath;
 } Target;

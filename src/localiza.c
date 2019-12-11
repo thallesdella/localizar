@@ -110,8 +110,7 @@ void grep(void) {
         freeString(pathCopy);
       }
 
-      int *result =
-          searchInTarget(searchTerm, getTargetPath(targets, i), flags);
+      int *result = searchInTarget(searchTerm, targets.targets[i], flags);
       if (result[0] == 0) {
         if (result[1] == 0) {
           printMsgForFile(targets, i, "Didnt find any occurrences");

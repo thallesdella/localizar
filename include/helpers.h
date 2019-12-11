@@ -10,10 +10,6 @@
 
 int newLinePosition(void *stream, long int start);
 
-int isFile(dString path);
-
-int isDir(dString path);
-
 int randInt();
 
 void printDebugMsg(dString msg);

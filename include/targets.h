@@ -11,7 +11,7 @@ void initTargets(Targets *target);
 
 void addTarget(Targets *target, dString targetPath);
 
-int *searchInTarget(SearchTerm needle, dString targetPath, Flags flags);
+int *searchInTarget(SearchTerm needle, Target target, Flags flags);
 
 dString getTargetPath(Targets target, unsigned int id);
 

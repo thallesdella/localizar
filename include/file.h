@@ -15,4 +15,14 @@ void generateOutputFile(dString name, dString content);
 
 void printMsgForFile(Targets target, unsigned int id, dString message);
 
+dString getFileExtension(dString filename);
+
+dString getFileName(dString filename);
+
+int fileExists(dString path);
+
+int isFile(dString path);
+
+int isDir(dString path);
+
 #endif // LOCALIZA_FILE_H

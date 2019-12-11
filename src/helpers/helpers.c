@@ -3,6 +3,7 @@
 //
 
 #include "helpers.h"
+#include "file.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -51,26 +52,9 @@ int randInt() {
  *   @param baseName name to be altered.
  */
 dString generateName(dString baseName) {
-  dString buf = initString(baseName);
-  int count = countAppearances(buf, ".");
-
-  dStringVector rand = initStringVector(2);
-  intToStr(rand[0], randInt());
-  intToStr(rand[1], randInt());
-
-  if (count == 0) {
-    buf = concatStr(buf, 3, "_", rand[0], rand[1]);
-    return buf;
-  }
-
-  dStringVector bufVec = initStringVector(count);
-  explode(buf, ".", bufVec);
-
-  bufVec[count - 1] = concatStr(bufVec[count - 1], 3, "_", rand[0], rand[1]);
-  implode(bufVec, count, ".", buf);
-
-  freeStringVector(bufVec, count);
-  return buf;
+  dString extension = getFileExtension(baseName);
+  printf("extension:%s\n", extension);
+  return extension;
 }
 
 /**
