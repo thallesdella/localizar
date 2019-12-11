@@ -10,10 +10,10 @@
 
 int newLinePosition(void *stream, long int start);
 
-int randInt();
+unsigned int randInt(unsigned int max, unsigned int min);
 
 void printDebugMsg(dString msg);
 
-dString generateName(dString baseName);
+dString generateName(dString baseName, dString ext);
 
 #endif // LOCALIZA_HELPERS_H

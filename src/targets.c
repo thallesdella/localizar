@@ -48,17 +48,15 @@ void addTarget(Targets *targets, dString targetPath) {
   target->path = initString(targetPath);
   target->ext = getFileExtension(targetPath);
   target->name = getFileName(targetPath);
-  /*target->outputPath =
-      (superGlobal.needOutputName && target->isFile ? generateName(target->path)
-                                                    : NULL);*/
-  printf("file extension:%s\n", target->ext);
-  printf("file name:%s\n", target->name);
+  target->outputPath = (superGlobal.needOutputName && target->isFile
+                            ? generateName(target->name, target->ext)
+                            : NULL);
 
   if (superGlobal.isDebug == 1) {
     printf("[ADD_TARGET] %s - out:%s isFile:%d isDir:%d hotLines:%d "
            "occurrences:%d\n",
-           target->path, /*target->outputPath*/ NULL, target->isFile,
-           target->isDir, target->hotLines, target->occurrences);
+           target->path, target->outputPath, target->isFile, target->isDir,
+           target->hotLines, target->occurrences);
   }
 }
 
