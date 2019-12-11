@@ -3,11 +3,9 @@
 //
 
 #include "localiza.h"
-#include "dstring.h"
+#include "file.h"
 #include "flags.h"
-#include "helpers.h"
 #include "searchTerm.h"
-#include "structs.h"
 #include "targets.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +14,8 @@
  * Function: getFlagsFromArg
  * ----------------------------
  *   @brief Loop through flags to see if they where enabled.
+ *
+ *   @category params
  *
  *   @param argc arguments count.
  *   @param argv arguments array.
@@ -31,6 +31,8 @@ void getFlagsFromArg(int argc, dStringVector argv) {
  * ----------------------------
  *   @brief Retrieve from arguments the search term and pass to addTermSearch.
  *
+ *   @category params
+ *
  *   @param argv arguments array.
  */
 void getSearchTermFromArg(dStringVector argv) {
@@ -42,6 +44,8 @@ void getSearchTermFromArg(dStringVector argv) {
  * Function: getTargetsFromArg
  * ----------------------------
  *   @brief Obtain targets from arguments em pass to addTarget.
+ *
+ *   @category params
  *
  *   @param argc arguments count.
  *   @param argv arguments array.
@@ -63,6 +67,8 @@ void getTargetsFromArg(int argc, dStringVector argv) {
  *   @brief responsible to call functions that handle arguments parse and
  *      construct theirs structs.
  *
+ *   @category params
+ *
  *   @param argc arguments count.
  *   @param argv arguments array.
  */
@@ -79,6 +85,21 @@ void parseArguments(int argc, dStringVector argv) {
 
   getSearchTermFromArg(argv);
   getTargetsFromArg(argc, argv);
+  printDebugMsg("[MAIN] Finish parsing arguments.");
+}
+
+/**
+ * Function: checkConflicts
+ * ----------------------------
+ *   @brief Check to see if there is any conflicts between flags.
+ */
+void checkConflicts() {
+  printDebugMsg("[MAIN] Checking conflicts");
+  if (getFlagStatus(flags, FLAG_OUT) && searchTerm.count > 1) {
+    updateFlagStatus(&flags, FLAG_OUT, 0);
+    printf(
+        "Warning: Generating an Output file only works with common search.\n");
+  }
 }
 
 /**
@@ -86,8 +107,11 @@ void parseArguments(int argc, dStringVector argv) {
  * ----------------------------
  *   @brief loop through targets to scan the directory, or to perform a search
  *      in a file.
+ *
+ *   @category Grep
  */
 void grep(void) {
+  printDebugMsg("[MAIN] Start grep...");
   for (unsigned int i = 0; i < targets.count; ++i) {
     if (targets.targets[i].isDir) {
       scanDir(&targets, getTargetPath(targets, i));
@@ -102,8 +126,7 @@ void grep(void) {
         freeString(pathCopy);
       }
 
-      int *result =
-          searchInTarget(searchTerm, getTargetPath(targets, i), flags);
+      int *result = searchInTarget(searchTerm, targets.targets[i], flags);
       if (result[0] == 0) {
         if (result[1] == 0) {
           printMsgForFile(targets, i, "Didnt find any occurrences");
@@ -121,28 +144,40 @@ void grep(void) {
       }
     }
   }
+
+  if (getFlagStatus(flags, FLAG_COUNT) == 1) {
+    displayFlagCount(targets);
+  }
+  printDebugMsg("[MAIN] Finish grep.");
 }
 
 /**
  * Function: garbageCollector
  * ----------------------------
  *   @brief Deallocate memory allocated during the execution of this script.
+ *
+ *   @category auxiliary
  */
 void garbageCollector() {
+  printDebugMsg("[MAIN] Cleaning the dirt...");
   free(options);
 
   freeStringVector(searchTerm.terms, searchTerm.count);
 
   for (unsigned int i = 0; i < targets.count; ++i) {
-    free(getTargetPath(targets, i));
+    freeString(getTargetPath(targets, i));
+    freeString(targets.targets[i].outputPath);
   }
   free(targets.targets);
+  printDebugMsg("[MAIN] Finish cleaning the dirt.");
 }
 
 /**
  * Function: main
  * ----------------------------
  *   @brief entry point of this script.
+ *
+ *   @category Main
  *
  *   @param argc arguments count.
  *   @param argv arguments array.
@@ -151,30 +186,22 @@ void garbageCollector() {
  */
 int main(int argc, dStringVector argv) {
   superGlobal.isDebug = 0;
+  superGlobal.needOutputName = 0;
+
   VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagDebug,         flagHelp,
                                            flagCaseSensitive, flagCount,
                                            flagLineNumber,    flagOutput};
   options = malloc(sizeof(Option) * FLAGS_COUNT);
 
   initFlags(&flags, options, verifyFlags, FLAGS_COUNT);
-  printDebugMsg(" -- Debug Mode On -- ");
-
   initSearchTerm(&searchTerm);
   initTargets(&targets);
-  printDebugMsg("[MAIN] Finish Init");
 
   parseArguments(argc, argv);
-  printDebugMsg("[MAIN] Finish argument parse");
+  checkConflicts();
 
   grep();
 
-  if (getFlagStatus(flags, FLAG_COUNT) == 1) {
-    displayFlagCount(targets);
-  }
-  printDebugMsg("[MAIN] Finish grep");
-
   garbageCollector();
-  printDebugMsg("[MAIN] Cleaning the dirt");
-
   return 0;
 }
