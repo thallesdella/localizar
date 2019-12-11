@@ -50,9 +50,9 @@ void displayFlagHelp(dString scriptName, int exitCode) {
   printf("-- OPTIONS --\n");
   printf("\t-h --help\t - Display help\n");
   printf("\t-i --case\t - Case sensitive search disable\n");
-  printf("\t-c --count\t - Display count of lines with has appearances of the "
+  printf("\t-c1 --HotL\t - Display count of lines with has appearances of the "
          "pattern\n");
-  // printf("\t-o --time\t - Display occurrences os the pattern in the file\n");
+  printf("\t-c2 --occur\t - Display occurrences of the patterns in the file\n");
   printf("\t-n --numb\t - Display line number witch contains the pattern \n");
   printf("\t-d --out\t - Save an output copy without the pattern\n");
 
@@ -60,7 +60,7 @@ void displayFlagHelp(dString scriptName, int exitCode) {
 }
 
 /**
- * Function: displayFlagCount
+ * Function: displayFlagHotLines
  * ----------------------------
  *   @brief Display number of lines with had an occurrence of the SearchTerm.
  *
@@ -68,8 +68,8 @@ void displayFlagHelp(dString scriptName, int exitCode) {
  *
  *   @param target struct Targets witch contains targets information.
  */
-void displayFlagCount(Targets target) {
-  printf("OCCURRENCES: \n");
+void displayFlagHotLines(Targets target) {
+  printf("HOT LINES: \n");
 
   for (unsigned int i = 0; i < target.count; ++i) {
     if (target.targets[i].isFile) {
@@ -81,6 +81,32 @@ void displayFlagCount(Targets target) {
   if (target.count > 1) {
     printf("TOTAL:%u %s\n", target.totalHotLines,
            (target.totalHotLines > 1 ? "founds" : "found"));
+  }
+}
+
+/**
+ * Function: displayFlagOccurrences
+ * ----------------------------
+ *   @brief Display number of lines with had an occurrence of the SearchTerm.
+ *
+ *   @category Count Occurrences
+ *
+ *   @param target struct Targets witch contains targets information.
+ */
+void displayFlagOccurrences(Targets target) {
+  printf("OCCURRENCES: \n");
+
+  for (unsigned int i = 0; i < target.count; ++i) {
+    if (target.targets[i].isFile) {
+      printf("\t%s:%u %s\n", target.targets[i].path,
+             target.targets[i].occurrences,
+             (target.targets[i].occurrences > 1 ? "founds" : "found"));
+    }
+  }
+
+  if (target.count > 1) {
+    printf("TOTAL:%u %s\n", target.totalOccurrences,
+           (target.totalOccurrences > 1 ? "founds" : "found"));
   }
 }
 
@@ -218,7 +244,7 @@ int flagCaseSensitive(dString arg) {
 }
 
 /**
- * Function: flagCount
+ * Function: flagHotLines
  * ----------------------------
  *   @brief Verification function for flag count lines that have occurrences.
  *
@@ -228,8 +254,8 @@ int flagCaseSensitive(dString arg) {
  *
  *   @return return 1 for true or 0 for false.
  */
-int flagCount(dString arg) {
-  if (strcmp(arg, "-c") == 0 || strcmp(arg, "--count") == 0) {
+int flagHotLines(dString arg) {
+  if (strcmp(arg, "-c1") == 0 || strcmp(arg, "--hotL") == 0) {
     return 1;
   }
   return 0;
@@ -247,7 +273,7 @@ int flagCount(dString arg) {
  *   @return return 1 for true or 0 for false.
  */
 int flagOccurrences(dString arg) {
-  if (strcmp(arg, "-o") == 0 || strcmp(arg, "--time") == 0) {
+  if (strcmp(arg, "-c2") == 0 || strcmp(arg, "--occur") == 0) {
     return 1;
   }
   return 0;

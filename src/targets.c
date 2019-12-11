@@ -115,7 +115,8 @@ int *searchInTarget(SearchTerm needle, File target, Flags flags) {
       r[1] = r[1] + 1;
       r[2] = r[2] + count;
 
-      if (getFlagStatus(flags, FLAG_COUNT) == 0) {
+      if (getFlagStatus(flags, FLAG_COUNT) == 0 &&
+          getFlagStatus(flags, FLAG_OCCUR) == 0) {
         if (getFlagStatus(flags, FLAG_NUMB)) {
           printf("%s:%d:%s\n", target.path, line, buf);
         } else {

@@ -9,7 +9,7 @@
 #include "helpers.h"
 #include "targets.h"
 
-#define FLAGS_COUNT 6
+#define FLAGS_COUNT 7
 
 Option *options;
 Flags flags;

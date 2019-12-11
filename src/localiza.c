@@ -105,7 +105,7 @@ void checkConflicts() {
 /**
  * Function: grep
  * ----------------------------
- *   @brief loop through targets to scan the directory, or to perform a search
+ *   @brief loop through targets to perform a scan to a directory, or a search
  *      in a file.
  *
  *   @category Grep
@@ -146,7 +146,11 @@ void grep(void) {
   }
 
   if (getFlagStatus(flags, FLAG_COUNT) == 1) {
-    displayFlagCount(targets);
+    displayFlagHotLines(targets);
+  }
+
+  if (getFlagStatus(flags, FLAG_OCCUR) == 1) {
+    displayFlagOccurrences(targets);
   }
   printDebugMsg("[MAIN] Finish grep.");
 }
@@ -188,16 +192,18 @@ int main(int argc, dStringVector argv) {
   superGlobal.isDebug = 0;
   superGlobal.needOutputName = 0;
 
-  VecFlagsFunc verifyFlags[FLAGS_COUNT] = {flagDebug,         flagHelp,
-                                           flagCaseSensitive, flagCount,
-                                           flagLineNumber,    flagOutput};
+  options = malloc(sizeof(Option) * FLAGS_COUNT);
+  VecFlagsFunc verifyFlags[FLAGS_COUNT] = {
+      flagDebug,       flagHelp,       flagCaseSensitive, flagHotLines,
+      flagOccurrences, flagLineNumber, flagOutput};
+
   dString names[FLAGS_COUNT] = {"Debug",
                                 "Help",
                                 "Case Sensitive",
                                 "Count Hot Lines",
+                                "Count Occurrences",
                                 "Show Line Number",
                                 "Generate Output"};
-  options = malloc(sizeof(Option) * FLAGS_COUNT);
 
   initFlags(&flags, options, names, verifyFlags, FLAGS_COUNT);
   initSearchTerm(&searchTerm);
